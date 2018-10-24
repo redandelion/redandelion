@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.redandelion.seeha.core.sys.mapper.ResourceMapper">
+    <resultMap id="BaseResultMap" type="cn.redandelion.seeha.core.sys.dto.Resource">
+        <result column="RESOURCE_ID" property="resourceId"  />
+        <result column="URL" property="url" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="LOGIN_REQUIRE" property="loginRequire" jdbcType="VARCHAR" />
+        <result column="ACCESS_CHECK" property="access_check" jdbcType="VARCHAR" />
+
+    </resultMap>
+
+</mapper>

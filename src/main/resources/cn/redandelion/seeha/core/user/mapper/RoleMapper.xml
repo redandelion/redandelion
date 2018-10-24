@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.redandelion.seeha.core.user.mapper.RoleMapper">
+    <resultMap id="BaseResultMap" type="cn.redandelion.seeha.core.user.dto.Role">
+        <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL" />
+        <result column="ROLE_CODE" property="roleCode" jdbcType="VARCHAR" />
+        <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+        <result column="ROLE_DESCRIPTION" property="roleDescription" jdbcType="VARCHAR" />
+        <result column="START_ACTIVE_DATE" property="startActiveDate" jdbcType="TIMESTAMP" />
+        <result column="END_ACTIVE_DATE" property="endActiveDate" jdbcType="TIMESTAMP" />
+        <result column="ENABLE_FLAG" property="enableFlag" jdbcType="VARCHAR" />
+
+    </resultMap>
+
+</mapper>
