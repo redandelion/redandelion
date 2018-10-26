@@ -84,5 +84,12 @@ public  class BaseServiceImpl<T> implements IBaseService<T>{
         return mapper.selectAll();
     }
 
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public List<T> selectByCondition(T record) {
+
+        return mapper.select(record);
+    }
+
 
 }

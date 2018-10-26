@@ -28,4 +28,5 @@ public interface IBaseService<T> {
 
 
     List<T> selectAll(IRequest iRequest);
+    List<T> selectByCondition(T record);
 }

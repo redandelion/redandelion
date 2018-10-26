@@ -30,6 +30,7 @@ public class DynamicConfigurationBaseDto {
         beanDefinitionBuilder.addPropertyValue("userId",100022L);
         beanDefinitionBuilder.addPropertyValue("locale","ZH_CN");
         beanDefinitionBuilder.addPropertyValue("roleId",1000233L);
+
         listableBeanFactory.registerBeanDefinition("iRequestHelper",beanDefinitionBuilder.getBeanDefinition());
         return null;
     }

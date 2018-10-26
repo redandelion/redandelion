@@ -60,7 +60,7 @@ public class AspectWhoField {
                 //logger.info((String) Class.forName(types[i].getName()).newInstance());
                 if( args[i]  instanceof BaseDto){
 //                  4.是子类则，自动填充Who字段
-                    logger.info("dto 子类");
+//                    logger.info("dto 子类");
 //                  强制转为BaseDto基类
                     BaseDto baseDTO = (BaseDto) args[i];
                     autoSetWhoProperty(baseDTO,flag);

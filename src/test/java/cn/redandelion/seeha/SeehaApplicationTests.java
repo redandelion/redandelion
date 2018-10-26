@@ -2,16 +2,16 @@ package cn.redandelion.seeha;
 
 import cn.redandelion.seeha.core.sys.basic.dto.BaseDto;
 import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
-import cn.redandelion.seeha.core.sys.dto.Function;
-import cn.redandelion.seeha.core.sys.dto.FunctionResource;
-import cn.redandelion.seeha.core.sys.mapper.FunctionMapper;
-import cn.redandelion.seeha.core.sys.mapper.FunctionResourceMapper;
-import cn.redandelion.seeha.core.sys.mapper.ResourceMapper;
-import cn.redandelion.seeha.core.sys.service.IFunctionService;
+import cn.redandelion.seeha.core.sys.function.dto.Function;
+import cn.redandelion.seeha.core.sys.function.dto.MenuItem;
+import cn.redandelion.seeha.core.sys.function.mapper.FunctionMapper;
+import cn.redandelion.seeha.core.sys.function.mapper.FunctionResourceMapper;
+import cn.redandelion.seeha.core.sys.function.mapper.ResourceMapper;
+import cn.redandelion.seeha.core.sys.function.service.IFunctionService;
 import cn.redandelion.seeha.core.user.dto.User;
 import cn.redandelion.seeha.core.user.mapper.UserMapper;
 import cn.redandelion.seeha.core.user.service.IUserService;
-import cn.redandelion.seeha.core.util.DtoUtils;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,9 +23,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.function.Consumer;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -48,6 +50,16 @@ public class SeehaApplicationTests {
 	@Autowired
 	private FunctionResourceMapper functionResourceMapper;
 	Logger log = LoggerFactory.getLogger(this.getClass());
+
+	@Test
+	public void menu(){
+		ServiceRequest request = (ServiceRequest) applicationContext.getBean("iRequestHelper");
+		Long[] a = new Long[]{10001L, 10002L};
+		request.setAllRoleId(a);
+		List<MenuItem> list= functionService.selectRoleFunctions(request);
+
+	}
+
 	@Test
 	public void insert(){
 //		User user = new User();
@@ -64,11 +76,16 @@ public class SeehaApplicationTests {
 //		DtoUtils.setUpdateInfo(resource);
 //		resourceMapper.insert(resource);
 //		log.info("============{}",resource);
-		FunctionResource f = new FunctionResource();
-		f.setFunctionId(213L);
-		f.setResourceId(8495L);
-		DtoUtils.setUpdateInfo(f);
-		functionResourceMapper.insert(f);
+//		FunctionResource f = new FunctionResource();
+//		f.setFunctionId(213L);
+//		f.setResourceId(8495L);
+//		DtoUtils.setUpdateInfo(f);
+//		functionResourceMapper.insert(f);
+		Consumer<String> consumer = (String s) ->  System.out.println(s);
+		consumer.accept("你大爷");
+
+		java.util.function.Function f= s-> s;
+		System.out.println(f.apply("redandelion"));
 	}
 	@Test
 	public void insertFunction(){
@@ -96,6 +113,8 @@ public class SeehaApplicationTests {
 
 		log.info("[-----------查询一个人]"+list);
 	}
+
+
 	@Test
 	public void selectAllFunctionSerivce(){
 		ServiceRequest request = (ServiceRequest) applicationContext.getBean("iRequestHelper");
@@ -116,22 +135,54 @@ public class SeehaApplicationTests {
 //		List<Function> list = functionService.select(request,f,1,1);
 
 		//log.info("[-----------查询一个人]"+list);
-		Field[] field = f.getClass().getDeclaredFields();
-		for(int i=0 ;i < field.length; i++){
-			try {
+		java.util.function.Function f1 = (fun) -> {
+			Field[] field = fun.getClass().getDeclaredFields();
+			StringBuilder builder = new StringBuilder();
+			for(int i=0 ;i < field.length; i++) {
 				boolean accessFlag = field[i].isAccessible();
-				PropertyDescriptor pd = new PropertyDescriptor(field[i].getName(), f.getClass());
+				PropertyDescriptor pd = null;
+				try {
+					pd = new PropertyDescriptor(field[i].getName(), fun.getClass());
+				} catch (IntrospectionException e) {
+					e.printStackTrace();
+				}
 				String name = pd.getReadMethod().getName();
 				field[i].setAccessible(true);
-				String value = String.valueOf(field[i].get(f));
-				log.info("========" + value);
+				String value = null;
+				try {
+					value = String.valueOf(field[i].get(fun));
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 
-				field[i].getName();
+				if(!value.equals("null")){
+					builder.append(value+"|");
+				}
+
+				log.info("========" + value);
 				field[i].setAccessible(accessFlag);
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-		}
+			return builder.toString();};
+			String s = f1.apply(f).toString();
+			System.out.println(s);
+
+//		Field[] field = f.getClass().getDeclaredFields();
+//		for(int i=0 ;i < field.length; i++){
+//			try {
+//				boolean accessFlag = field[i].isAccessible();
+//				PropertyDescriptor pd = new PropertyDescriptor(field[i].getName(), f.getClass());
+//				String name = pd.getReadMethod().getName();
+//				field[i].setAccessible(true);
+//				String value = String.valueOf(field[i].get(f));
+//				log.info("========" + value);
+//
+//				field[i].getName();
+//				field[i].setAccessible(accessFlag);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+
 	}
 
 }
