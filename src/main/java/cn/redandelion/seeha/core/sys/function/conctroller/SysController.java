@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SysController {
     @RequestMapping("/index")
     public String index(){
-        return "index1";
+        return "index";
     }
 }

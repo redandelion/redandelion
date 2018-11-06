@@ -19,4 +19,18 @@
 <select id="findAll" resultMap="BaseResultMap">
     SELECT  * from sys_user
 </select>
+    <insert id="batchInsert">
+        INSERT INTO sys_user (
+        user_id,
+        user_name,
+        user_password,
+        location,
+        phone,
+        start_time,
+        end_time,
+--         todo
+
+        )
+
+    </insert>
 </mapper>

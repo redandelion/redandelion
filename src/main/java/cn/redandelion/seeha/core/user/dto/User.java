@@ -25,7 +25,7 @@ public class User extends BaseDto {
 //    密码
     @NotEmpty(message = "密码不能为空")
     @Length(min = 6,max = 16,message = "密码长度6-16位！")
-    private Long userPassword;
+    private String userPassword;
 
     @Length(max = 150)
     private String email; //邮箱地址
@@ -65,11 +65,11 @@ public class User extends BaseDto {
         this.userName = userName;
     }
 
-    public Long getUserPassword() {
+    public String getUserPassword() {
         return userPassword;
     }
 
-    public void setUserPassword(Long userPassword) {
+    public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
     }
 

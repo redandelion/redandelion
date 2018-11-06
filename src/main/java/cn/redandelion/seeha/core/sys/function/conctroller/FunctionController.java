@@ -35,8 +35,10 @@ public class FunctionController extends BaseController{
     @ResponseBody
     public ResponseData roleFunctionMenu(HttpServletRequest request){
         IRequest iRequest = (IRequest) context.getBean("iRequestHelper");
+//      todo
         Long[] a = new Long[]{10001L, 10002L};
         iRequest.setAllRoleId(a);
         return new ResponseData(service.selectRoleFunctions(iRequest));
     }
+
 }
