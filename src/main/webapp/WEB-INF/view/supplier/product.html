@@ -15,7 +15,7 @@
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='url' data-bind="value:model.url" class="k-textbox">
+        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='产品名称' data-bind="value:model.productName" class="k-textbox">
 
         <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='resource.name' data-bind="value:model.name" class="k-textbox">
         <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:query" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i>查询</span>
@@ -33,15 +33,13 @@
     Hap.initEnterQuery('#query-form', viewModel.query);
     console.log();
     var dataSource = Hap.createGridDataSource({
-        url:"${request.contextPath}/sys/resource/",
+        url:"${request.contextPath}/product/",
         model: {
-            id: "resourceId",
+            id: "productId",
             fields: {
-                name: {validation: {required: true}},
-                loginRequire: {defaultValue: 'Y', type: 'boolean', checkedValue: 'Y', uncheckedValue: 'N'},
-                accessCheck: {defaultValue: 'Y', type: 'boolean', checkedValue: 'Y', uncheckedValue: 'N'},
-                type: {defaultValue: 'HTML'},
-                url: {validation: {required: true}}
+                productType: {validation: {required: true}},
+                supplierId:{defaultValue: 1},
+                price: {validation: {required: true}}
             }
         }
     });
@@ -65,30 +63,30 @@
         },
         columns: [
             {
-                field: "url",
-                title: 'url',
+                field: "productName",
+                title: 'productName',
                 width: 240,
                 sortable: {
                     initialDirection: "asc"
                 }
             },
             {
-                field: "type",
-                title: 'type',
+                field: "productType",
+                title: 'productType',
                 width: 100,
                 sortable: false
 
             }, {
-                field: "name",
+                field: "price",
                 sortable: false,
-                title: 'name',
+                title: 'price',
                 width: 120
 
             },
             {
-                field: "description",
+                field: "productOtherDesc",
                 sortable: false,
-                title: 'description>',
+                title: 'description',
                 width: 150
             }]
     }).data("kendoGrid");

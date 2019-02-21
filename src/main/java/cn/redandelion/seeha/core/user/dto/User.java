@@ -152,4 +152,23 @@ public class User extends BaseDto {
     public void setSupplier(String supplier) {
         this.supplier = supplier;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", userPassword='" + userPassword + '\'' +
+                ", email='" + email + '\'' +
+                ", location='" + location + '\'' +
+                ", phone='" + phone + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", employeeId='" + employeeId + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", supplier='" + supplier + '\'' +
+                '}';
+    }
 }

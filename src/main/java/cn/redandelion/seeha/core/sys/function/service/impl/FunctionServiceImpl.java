@@ -1,5 +1,4 @@
 package cn.redandelion.seeha.core.sys.function.service.impl;
-
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import cn.redandelion.seeha.core.sys.basic.service.impl.BaseServiceImpl;
 import cn.redandelion.seeha.core.sys.function.dto.Function;
@@ -15,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class FunctionServiceImpl extends BaseServiceImpl<Function> implements IFunctionService {
@@ -28,7 +25,6 @@ public class FunctionServiceImpl extends BaseServiceImpl<Function> implements IF
     @Autowired
     IResourceService resourceService;
     /**
-     *
      * @param request IRequest
      * @return 返回所有角色的菜单集合。
      */
@@ -95,6 +91,19 @@ public class FunctionServiceImpl extends BaseServiceImpl<Function> implements IF
             menu.setShortcutId(function.getParentFunctionId());
             list.add(menu);
         }
+        return list;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<Function> batchUpdate(IRequest request, List<Function> list) {
+        list.forEach(x -> {if (x.getFunctionId()==null){
+            this.insertSelective(request,x);
+        }else {
+            this.updateByPrimaryKeySelective(request,x);
+        }
+        });
+
         return list;
     }
 }

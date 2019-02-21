@@ -26,10 +26,10 @@ public class FunctionController extends BaseController{
     @ResponseBody
     public ResponseData functionMenu(Function dto,
                                      @RequestParam(defaultValue = DEFAULT_PAGE )int page,
-                                     @RequestParam(defaultValue = DEFAULT_PAGE_SIZE )int pageSize,
+                                     @RequestParam(defaultValue = DEFAULT_PAGE_SIZE )int pagesize,
                                      HttpServletRequest request){
         IRequest iRequest = (IRequest) context.getBean("iRequestHelper");
-        return new ResponseData(service.select(iRequest,dto,page,pageSize));
+        return new ResponseData(service.select(iRequest,dto,page,pagesize));
     }
     @RequestMapping("rolemenu")
     @ResponseBody

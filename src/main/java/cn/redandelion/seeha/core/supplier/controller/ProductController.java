@@ -1,9 +1,9 @@
-package cn.redandelion.seeha.core.sys.function.conctroller;
+package cn.redandelion.seeha.core.supplier.controller;
 
+import cn.redandelion.seeha.core.supplier.dto.Product;
+import cn.redandelion.seeha.core.supplier.service.IProductService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
-import cn.redandelion.seeha.core.sys.function.dto.Resource;
-import cn.redandelion.seeha.core.sys.function.service.IResourceService;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -15,22 +15,24 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-@RequestMapping("sys/resource")
-public class ResourceController extends BaseController{
+@RequestMapping("product")
+public class ProductController extends BaseController{
     @Autowired
-    private IResourceService resourceService;
+    private IProductService productService;
     @Autowired
     private ApplicationContext context;
+
     @RequestMapping("query")
     @ResponseBody
-    public ResponseData queryResource(HttpServletRequest request, Resource resource,
+    public ResponseData queryProduct(HttpServletRequest request, Product product,
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
         IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
-        return new ResponseData(resourceService.select(requestContext, resource, page, pagesize));
+        return new ResponseData(productService.select(requestContext,product, page, pagesize));
     }
+
     @PostMapping(value = "/submit")
-    public ResponseData submitResource(HttpServletRequest request, @RequestBody List<Resource> resources,
+    public ResponseData submitProduct(HttpServletRequest request, @RequestBody List<Product> products,
                                        BindingResult result) throws Exception {
 //        getValidator().validate(resources, result);
         if (result.hasErrors()) {
@@ -39,13 +41,13 @@ public class ResourceController extends BaseController{
             return responseData;
         }
         IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
-        return new ResponseData(resourceService.batchUpdate(requestContext, resources));
+        return new ResponseData(productService.batchUpdate(requestContext, products));
     }
 
     @PostMapping(value = "/remove")
-    public ResponseData removeResource(HttpServletRequest request, @RequestBody List<Resource> resources)
+    public ResponseData removeProduct(HttpServletRequest request, @RequestBody List<Product> products)
             throws Exception {
-        resourceService.batchDelete(resources);
+        productService.batchDelete(products);
         return new ResponseData();
     }
 

@@ -15,6 +15,8 @@ public class SpringSafeConfig extends WebSecurityConfigurerAdapter {
         http
              .authorizeRequests().anyRequest().permitAll()
              .and()
+             .headers().frameOptions().disable()
+             .and()
              .csrf().disable();
     }
 }

@@ -1,7 +1,9 @@
 package cn.redandelion.seeha.core.sys.basic.dto;
 
 import cn.redandelion.seeha.core.annotation.Condition;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import java.io.Serializable;
@@ -29,11 +31,13 @@ public class BaseDto implements Serializable {
     @JsonIgnore
     @Column
     @Condition(exclude=true)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastUpdateDate;
 
     @JsonIgnore
     @Column
     @Condition(exclude=true)
+
     private Long lastUpdateLogin;
 
     public Long getCreatedBy() {

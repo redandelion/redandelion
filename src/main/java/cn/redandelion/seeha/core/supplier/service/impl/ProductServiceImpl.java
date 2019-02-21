@@ -1,9 +1,9 @@
-package cn.redandelion.seeha.core.sys.function.service.impl;
+package cn.redandelion.seeha.core.supplier.service.impl;
 
+import cn.redandelion.seeha.core.supplier.dto.Product;
+import cn.redandelion.seeha.core.supplier.service.IProductService;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import cn.redandelion.seeha.core.sys.basic.service.impl.BaseServiceImpl;
-import cn.redandelion.seeha.core.sys.function.dto.FunctionResource;
-import cn.redandelion.seeha.core.sys.function.service.IFunctionResourceService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,11 +11,11 @@ import java.util.List;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class FunctionResourceServiceImpl extends BaseServiceImpl<FunctionResource> implements IFunctionResourceService {
+public class ProductServiceImpl extends BaseServiceImpl<Product> implements IProductService{
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<FunctionResource> batchUpdate(IRequest request, List<FunctionResource> list) {
-        list.forEach(x -> {if (x.getResourceId()==null){
+    public List<Product> batchUpdate(IRequest request, List<Product> list) {
+        list.forEach(x -> {if (x.getProductId()==null){
             this.insertSelective(request,x);
         }else {
             this.updateByPrimaryKeySelective(request,x);
@@ -23,4 +23,5 @@ public class FunctionResourceServiceImpl extends BaseServiceImpl<FunctionResourc
         });
         return list;
     }
+
 }

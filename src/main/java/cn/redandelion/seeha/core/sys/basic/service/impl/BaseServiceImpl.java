@@ -91,5 +91,24 @@ public  class BaseServiceImpl<T> implements IBaseService<T>{
         return mapper.select(record);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<T> batchUpdate(IRequest request, List<T> list) {
+//        list.forEach(x->{
+//
+//        });
+        return list;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int batchDelete(List<T> list) {
+        int  num = 0;
+        for (T e :list) {
+            num += mapper.deleteByPrimaryKey(e);
+        }
+        return num;
+    }
+
 
 }

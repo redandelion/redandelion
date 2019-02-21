@@ -18,6 +18,8 @@ public class Resource extends BaseDto {
     private String url;
 //    TYPE 资源类型，分类管理
     private String name;
+
+    private String type;
 //    资源描述
     private String description;
 //    需要登录?
@@ -25,6 +27,14 @@ public class Resource extends BaseDto {
 //    访问检查
     private String access_check;
 //
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public Long getResourceId() {
         return resourceId;

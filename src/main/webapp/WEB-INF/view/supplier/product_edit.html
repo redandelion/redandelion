@@ -1,0 +1,294 @@
+
+<#include "../../../include/header.html">
+<body>
+<script>
+
+    var viewModel = Hap.createGridViewModel("#grid",{
+        model:{
+            supplierId:'${supplier.supplierId!""}',
+            supplierCode:'${supplier.supplierCode!""}',
+            fullName:'${supplier.fullName!""}',
+            englishName:'${supplier.englishName!""}',
+            dutyParagraph:'${supplier.dutyParagraph!""}',
+            creditCode:'${supplier.creditCode!""}',
+            supplierAmount:'${supplier.supplierAmount!""}',
+//            parentCustomersId:'${supplier.parentCustomersId!""}',
+            addressCountry:'${supplier.addressCountry!""}',
+            addressProvince:'${supplier.addressProvince!""}',
+            addressCity:'${supplier.addressCity!""}',
+            addressZone:'${supplier.addressZone!""}',
+            addressDetails:'${supplier.addressDetails!""}',
+            phone:'${supplier.phone!""}',
+            website:'${supplier.website!""}',
+            isListed:'${supplier.isListed!""}',
+
+            otherDescription:'${supplier.otherDescription!""}'
+        },
+        save: function () {
+            if (validator.validate()) {
+                Hap.submitForm({
+                    url: '${request.contextPath}/supplier/supplierInfo',
+                    formModel: viewModel.model,
+//                    contentType:'application/json',
+                    grid: {
+                        "productList": $("#grid")
+                    },
+                    success: function (data) {
+                        <!--刷新父页面-->
+                        window.parent.viewModel.refresh();
+                        <!--关闭父页面打开的窗口-->
+                        closeWin();
+                    }
+                });
+            }
+        },
+        close: function () {
+            closeWin();
+        }
+    });
+    function closeWin() {
+        //关闭#score-window窗口的父页面
+        window.parent.$('#mywindow').data("kendoWindow").close();
+    }
+</script>
+<div id="dialog"></div>
+<div id="resource-item-dialog"></div>
+<form class="form-horizontal" >
+    <div id="form">
+        <div class="row" style="clear: both;">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">供应商编号</label>
+                    <div class="col-xs-8">
+                        <input id="supplierCode" name="supplierCode" type="text" data-bind="enabled: model.isEnabled,value:model.supplierCode" data-role="maskedtextbox" style="width: 100%;" required data-label="供应编号">
+                        <script>kendo.bind($('#supplierCode'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <label class="col-xs-2  control-label" style="text-align: right">供应商名称</label>
+                    <div class="col-xs-8">
+
+                        <input id="fullName" name="fullName"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.fullName" data-role="maskedtextbox" style="width: 100%;" required data-label="供应商名称">
+                        <script>kendo.bind($('#fullName'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--2-->
+        <div class="row" style="clear: both;">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">英文名称</label>
+                    <div class="col-xs-8">
+                        <input id="englishName" name="englishName" type="text" data-bind="enabled: model.isEnabled,value:model.englishName" data-role="maskedtextbox" style="width: 100%;"  data-label="供应商英文名称">
+                        <script>kendo.bind($('#englishName'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <label class="col-xs-2  control-label" style="text-align: right">税号</label>
+                    <div class="col-xs-8">
+
+                        <input id="dutyParagraph" name="dutyParagraph"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.dutyParagraph" data-role="maskedtextbox"  style="width: 100%;" required  data-label="税号">
+                        <script>kendo.bind($('#dutyParagraph'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--3-->
+        <div class="row" style="clear: both;">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">资产</label>
+                    <div class="col-xs-8">
+                        <input id="supplierAmount" name="supplierAmount" type="text" data-bind="enabled: model.isEnabled,value:model.supplierAmount" data-role="maskedtextbox" style="width: 100%;"  data-label="资产">
+                        <script>kendo.bind($('#supplierAmount'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">电话</label>
+                    <div class="col-xs-8">
+
+                        <input id="phone" name="phone"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.phone" data-role="maskedtextbox" style="width: 100%;" required data-label="电话">
+                        <script>kendo.bind($('#phone'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">网站</label>
+                    <div class="col-xs-8">
+
+                        <input id="website" name="website"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.website" data-role="maskedtextbox" style="width: 100%;"  data-label="网站">
+                        <script>kendo.bind($('#website'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--4-->
+        <div class="row" style="clear: both;">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">省份</label>
+                    <div class="col-xs-8">
+                        <input id="addressProvince" name="addressProvince" type="text" data-bind="enabled: model.isEnabled,value:model.addressProvince" data-role="maskedtextbox" style="width: 100%;"  data-label="省份">
+                        <script>kendo.bind($('#addressProvince'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">市</label>
+                    <div class="col-xs-8">
+
+                        <input id="addressCity" name="addressCity"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.addressCity" data-role="maskedtextbox" style="width: 100%;"  data-label="城市">
+                        <script>kendo.bind($('#addressCity'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-xs-4  control-label" style="text-align: right">区/县</label>
+                    <div class="col-xs-8">
+
+                        <input id="addressZone" name="addressZone"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.addressZone" data-role="maskedtextbox" style="width: 100%;"  data-label="区/县">
+                        <script>kendo.bind($('#addressZone'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--5-->
+        <div class="row" style="clear: both;">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-xs-3  control-label" style="text-align: right">详细地址</label>
+                    <div class="col-xs-9">
+                        <input id="addressDetails" name="addressDetails" type="text" data-bind="enabled: model.isEnabled,value:model.addressDetails" data-role="maskedtextbox" style="width: 100%;"  data-label="供应编号">
+                        <script>kendo.bind($('#addressDetails'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-xs-3  control-label" style="text-align: right">其他描述</label>
+                    <div class="col-xs-9">
+
+                        <input id="otherDescription" name="otherDescription"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.otherDescription" data-role="maskedtextbox" style="width: 100%;"   data-label="其他描述">
+                        <script>kendo.bind($('#otherDescription'), viewModel);</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="page-content">
+    <div class="pull-left" id="toolbar-btn">
+        <span class="btn btn-primary k-grid-add"  data-hotkey="hotkey_create" style="float:left;margin-right:5px;" data-bind="click:create"><i class="fa fa-plus-square" style="margin-right:3px;"></i>新建</span>
+        <span class="btn btn-success k-grid-save-changes" data-hotkey="hotkey_save" data-bind="click:save" style="float:left;margin-right:5px;"><i class="fa fa-save" style="margin-right:3px;"></i>保存</span>
+        <span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:remove" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除</span>
+
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='产品名称' data-bind="value:model.productName" class="k-textbox">
+
+        <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='resource.name' data-bind="value:model.name" class="k-textbox">
+        <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:query" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i>查询</span>
+        <span class="btn btn-default" style="float:left;" data-bind="click:reset" type="button"><i class="fa fa-eraser" style="margin-right:3px;"></i>重置</span>
+        <div style="clear:both"></div>
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+
+    <div style="clear:both">
+        <div id="grid"></div>
+    </div>
+</div>
+<div class="text-right k-window-toolbar" id="gridToolbar">
+   <span class="btn btn-primary" data-hotkey="hotkey_save" style="margin-right: 10px"  data-bind="click:save"> 保存</span>
+    <span class="btn btn-default" data-hotkey="hotkey_cancel" data-bind="click:close" type="button"  >取消</span>
+</div>
+<script>kendo.bind($("#gridToolbar"), viewModel);</script>
+<script>
+var validator = $("#form").kendoValidator({
+//    invalidMessageType : "tooltip" // 悬浮提示框
+}).data("kendoValidator");
+    Hap.initEnterQuery('#query-form', viewModel.query);
+
+    var dataSource = Hap.createGridDataSource({
+        url:"${request.contextPath}/product/",
+
+        model: {
+            id: "productId",
+            fields: {
+                productType: {validation: {required: true}},
+                supplierId:{defaultValue: '${supplier.supplierId!""}'},
+                price: {validation: {required: true}}
+            }
+        },
+        parameterMap: function (options, type) {
+            if (type !== "read" && options.models) {
+                var datas = Hap.prepareSubmitParameter(options, type)
+                return kendo.stringify(datas);
+            } else if (type === "read") {
+                return Hap.prepareQueryParameter(viewModel.model.stringify(), options)
+            }
+        }
+    });
+
+    var grid = $("#grid").kendoGrid({
+        dataSource: dataSource,
+        dataBound: function () {
+            if (parent.autoResizeIframe) {
+                parent.autoResizeIframe('${RequestParameters.functionCode!}')
+            }
+        },
+        scrollable: true,
+        navigatable: false,
+        editable: true,
+        sortable: true,
+        pageSize: 5,
+        selectable: 'multiple,rowbox',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+            {
+                field: "productName",
+                title: 'productName',
+                width: 240,
+                sortable: {
+                    initialDirection: "asc"
+                }
+            },
+            {
+                field: "productType",
+                title: 'productType',
+                width: 100,
+                sortable: false
+
+            }, {
+                field: "price",
+                sortable: false,
+                title: 'price',
+                width: 120
+
+            },
+            {
+                field: "productOtherDesc",
+                sortable: false,
+                title: 'description',
+                width: 150
+            }]
+    }).data("kendoGrid");
+
+</script>
+</body>
+</html>

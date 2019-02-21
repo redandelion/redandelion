@@ -11,12 +11,14 @@ public class UserController {
     @RequestMapping(value = "index")
     public String index2(ModelMap map) {
         map.put("title", "freemarker hello word  ====");
-        return "index"; // 开头不要加上/，linux下面会出错
+        // 开头不要加上/，linux下面会出错
+        return "index";
     }
-    @RequestMapping(value = "resource")
+    @RequestMapping(value = {"resource","sys_resource"})
     public String resource(ModelMap map) {
         map.put("title", "freemarker hello word  ====");
-        return "sys_resource"; // 开头不要加上/，linux下面会出错
+        return "sys/sys_resource";
     }
+
 }
 
