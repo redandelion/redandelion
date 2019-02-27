@@ -3,20 +3,30 @@ package cn.redandelion.seeha.core.supplier.controller;
 import cn.redandelion.seeha.core.supplier.dto.Supplier;
 import cn.redandelion.seeha.core.supplier.service.ISupplierService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
+import cn.redandelion.seeha.core.sys.basic.dto.Code;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import cn.redandelion.seeha.core.sys.function.service.IResourceService;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-@Controller
+@RestController
 @RequestMapping("supplier")
 public class SupplierController extends BaseController{
     @Autowired
@@ -68,5 +78,22 @@ public class SupplierController extends BaseController{
 
         return new ResponseData(supplierService.saveInfo(requestContext,suppliers));
     }
-
+/**
+ * 供应商值列表
+  */
+    @RequestMapping(value = "/code")
+    @ResponseBody
+    public List<Code> supplierCode(HttpServletResponse response ) throws IOException {
+        List<Code> codeList = new ArrayList<>();
+        List<Supplier>  suppliers = supplierService.selectAll();
+        if (suppliers.size()>0){
+            suppliers.forEach(x->{
+                Code code = new Code();
+                code.setValue(x.getSupplierId());
+                code.setMeaning(x.getFullName());
+                codeList.add(code);
+            });
+        }
+        return codeList;
+    }
 }

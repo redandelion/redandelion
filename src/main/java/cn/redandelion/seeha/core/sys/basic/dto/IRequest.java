@@ -4,6 +4,8 @@ package cn.redandelion.seeha.core.sys.basic.dto;
  * #{copyright}#
  */
 
+import org.springframework.stereotype.Component;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +21,7 @@ import java.util.Set;
  *
  * @author shengyang.zhou@hand-china.com
  */
+@Component
 public interface IRequest extends Serializable {
 
     String FIELD_USER_ID = "userId";

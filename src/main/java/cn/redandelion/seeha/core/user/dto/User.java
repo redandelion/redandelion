@@ -47,7 +47,7 @@ public class User extends BaseDto {
 //    客户Id
     private String customerId;
 //    供应商Id
-    private String supplier;
+    private String supplierId;
 
     public Long getUserId() {
         return userId;
@@ -145,12 +145,12 @@ public class User extends BaseDto {
         this.customerId = customerId;
     }
 
-    public String getSupplier() {
-        return supplier;
+    public String getSupplierId() {
+        return supplierId;
     }
 
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
+    public void setSupplierId(String supplierId) {
+        this.supplierId = supplierId;
     }
 
     @Override
@@ -168,7 +168,7 @@ public class User extends BaseDto {
                 ", status='" + status + '\'' +
                 ", employeeId='" + employeeId + '\'' +
                 ", customerId='" + customerId + '\'' +
-                ", supplier='" + supplier + '\'' +
+                ", supplierId='" + supplierId + '\'' +
                 '}';
     }
 }

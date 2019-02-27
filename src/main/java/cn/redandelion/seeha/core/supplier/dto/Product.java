@@ -2,10 +2,7 @@ package cn.redandelion.seeha.core.supplier.dto;
 
 import cn.redandelion.seeha.core.sys.basic.dto.BaseDto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Table(name="PRODUCT")
@@ -34,15 +31,18 @@ public class Product extends BaseDto {
      *     产品成本价格
      */
 
-    private Double price;
+    private BigDecimal price;
 
     /**
      *     产品 销售价格
      */
-    private Double totalPrice;
+    private BigDecimal totalPrice;
     /**
      *     产品 描述
      */
+    @Transient
+    private int number;
+
     private String productOtherDesc;
 
     public Long getProductId() {
@@ -77,19 +77,19 @@ public class Product extends BaseDto {
         this.productName = productName;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public Double getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Double totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 
@@ -99,5 +99,13 @@ public class Product extends BaseDto {
 
     public void setProductOtherDesc(String productOtherDesc) {
         this.productOtherDesc = productOtherDesc;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 }
