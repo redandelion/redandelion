@@ -3,7 +3,9 @@
 <body>
 <script>
     var viewModel = Hap.createGridViewModel("#grid",{
-        model:{orderType:0}
+        model:{orderType:0,
+            orderState: <#if orderState?number ==0 > ${orderState} <#else> ${orderState}-1 </#if>,
+        }
     });
 
 //    var orderStatus = ['已申请','已审批','已完成','已入库','已驳回'];
@@ -19,11 +21,11 @@
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='供应商编号' data-bind="value:model.supplierCode" class="k-textbox">
+        <!--<input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='供应商编号' data-bind="value:model.supplierCode" class="k-textbox">-->
 
-        <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='供应商名称' data-bind="value:model.fullName" class="k-textbox">
+        <!--<input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='供应商名称' data-bind="value:model.fullName" class="k-textbox">-->
         <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:query" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i>查询</span>
-        <span class="btn btn-default" style="float:left;" data-bind="click:reset" type="button"><i class="fa fa-eraser" style="margin-right:3px;"></i>重置</span>
+        <!--<span class="btn btn-default" style="float:left;" data-bind="click:reset" type="button"><i class="fa fa-eraser" style="margin-right:3px;"></i>重置</span>-->
         <div style="clear:both"></div>
     </div>
     <script>kendo.bind($('#query-form'), viewModel);</script>
@@ -36,10 +38,31 @@
 <script>
 
     Hap.initEnterQuery('#query-form', viewModel.query);
+//    新建
     function openWindow() {
         var url = '${request.contextPath}/po/new/';
 
 
+        var editWin = Hap.createWindow('#mywindow', {
+            width: 900,
+            height: 600,
+            title: '编辑',
+            url: url
+        });
+
+        if (parent.autoResizeIframe) {
+            parent.autoResizeIframe('${RequestParameters.functionCode!}', 700, function () {
+                editWin.center().open();
+            })
+        } else {
+            editWin.center().open();
+        }
+    }
+    function openWindowEdit(id) {
+        var url = '${request.contextPath}/po/edit/${orderState}/';
+        if (id) {
+            url = url + id;
+        }
         var editWin = Hap.createWindow('#mywindow', {
             width: 900,
             height: 600,
@@ -84,7 +107,7 @@
             {
                 field: "createrName",
                 title: '创建人',
-                width: 240
+                width: 100
             },
 //            {
 //                field: "creater",
@@ -94,7 +117,7 @@
             {
                 field: "createTime",
                 title: '创建时间',
-                width: 100,
+                width: 150,
                 sortable: false,
 
 
@@ -102,7 +125,7 @@
                 field: "checkerName",
                 sortable: false,
                 title: '审核人',
-                width: 120
+                width: 100
 
             },
             {
@@ -115,7 +138,7 @@
                 field: "completerName",
                 sortable: false,
                 title: '完成人',
-                width: 150
+                width: 100
             },
             {
                 field: "endTime",
@@ -140,8 +163,8 @@
                 attributes: {style: "text-align:center"},
                 width: 80,
                 template: function (rowdata) {
-                    if (!!rowdata.supplierId) {
-                        return Hap.createAnchor('编辑', openWindow, rowdata.supplierId);
+                    if (!!rowdata.orderId) {
+                        return Hap.createAnchor('编辑', openWindowEdit, rowdata.orderId);
                     } else return '';
                 }
 

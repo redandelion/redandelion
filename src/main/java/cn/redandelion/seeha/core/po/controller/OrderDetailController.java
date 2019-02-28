@@ -27,7 +27,7 @@ public class OrderDetailController extends BaseController {
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
         IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
-        return new ResponseData(service.select(requestContext, orderDetail, page, pagesize));
+        return new ResponseData(service.selectQuery(requestContext, orderDetail, page, pagesize));
     }
     @PostMapping(value = "/submit")
     public ResponseData submitResource(HttpServletRequest request, @RequestBody List<OrderDetail> orderDetails,

@@ -32,4 +32,6 @@ public interface IBaseService<T> {
 
     List<T> batchUpdate(IRequest request, @StdWho List<T> list);
     int batchDelete(List<T> list);
+    int batchDeleteByForeikey(T record);
+
 }

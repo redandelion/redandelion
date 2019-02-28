@@ -4,6 +4,8 @@
         version: '2.0'
     };
     seeha.orderStatus =  ['已申请','已审批','已完成','已入库','已驳回'];
+    seeha.orderType =  ['采购订单','销售订单'];
+    seeha.orderStatusChain =  ['申请','审批','确认','入库','驳回'];
 seeha.prepareSubmitParameter = function (options, type) {
     var datas = options.models;
     $.each(datas, function (i, r) {

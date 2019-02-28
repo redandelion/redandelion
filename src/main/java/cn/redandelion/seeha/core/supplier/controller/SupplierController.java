@@ -1,6 +1,8 @@
 package cn.redandelion.seeha.core.supplier.controller;
 
+import cn.redandelion.seeha.core.supplier.dto.Product;
 import cn.redandelion.seeha.core.supplier.dto.Supplier;
+import cn.redandelion.seeha.core.supplier.service.IProductService;
 import cn.redandelion.seeha.core.supplier.service.ISupplierService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
@@ -32,6 +34,8 @@ public class SupplierController extends BaseController{
     @Autowired
     private ISupplierService supplierService;
     @Autowired
+    private IProductService productService;
+    @Autowired
     private ApplicationContext context;
 
     @RequestMapping("query")
@@ -59,7 +63,15 @@ public class SupplierController extends BaseController{
     @PostMapping(value = "/remove")
     public ResponseData removeResource(HttpServletRequest request, @RequestBody List<Supplier> suppliers)
             throws Exception {
+        suppliers.forEach(x->{
+            Product product = new Product();
+            product.setSupplierId(x.getSupplierId());
+            productService.batchDeleteByForeikey(product);
+        });
+
+
         supplierService.batchDelete(suppliers);
+
         return new ResponseData();
     }
     /**

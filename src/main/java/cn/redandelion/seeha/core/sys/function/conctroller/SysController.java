@@ -1,5 +1,7 @@
 package cn.redandelion.seeha.core.sys.function.conctroller;
 
+import cn.redandelion.seeha.core.po.dto.OrderModel;
+import cn.redandelion.seeha.core.po.service.IOrderModelService;
 import cn.redandelion.seeha.core.supplier.dto.Supplier;
 import cn.redandelion.seeha.core.supplier.service.ISupplierService;
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
@@ -19,7 +21,8 @@ import java.util.List;
 public class SysController {
     @Autowired
     private ISupplierService supplierService;
-
+    @Autowired
+    private IOrderModelService orderModelService;
 
     @RequestMapping("/index")
     public String index(){
@@ -48,8 +51,9 @@ public class SysController {
         }
          return "supplier/product_edit";
     }
-    @RequestMapping("/po")
-    public String order(){
+    @RequestMapping("/po/{orderState}")
+    public String order(ModelMap map,@PathVariable String orderState){
+        map.put("orderState",orderState);
         return "po/order";
     }
     @RequestMapping("/po/detail")
@@ -60,7 +64,21 @@ public class SysController {
     @RequestMapping("/po/new")
     public String orderNew(Model map){
 
-
         return "po/order_new";
     }
+/**
+ *  编辑采购订单
+  */
+
+@RequestMapping("/po/edit/{orderState}/{orderId}")
+public String OrderEdit(ModelMap map,@PathVariable(required = false) Long orderId,
+                        @PathVariable(required = false) int orderState){
+
+    OrderModel orderModel = new OrderModel();
+    orderModel.setOrderId(orderId);
+    orderModel = orderModelService.orderQuery(null,orderModel,0,10).get(0);
+    map.put("orderState",orderState);
+    map.put("orderModel",orderModel);
+    return "po/order_edit";
+}
 }

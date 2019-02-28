@@ -2,10 +2,7 @@ package cn.redandelion.seeha.core.po.dto;
 
 import cn.redandelion.seeha.core.sys.basic.dto.BaseDto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -29,6 +26,7 @@ public class OrderDetail extends BaseDto {
      * 订单详情  产品Id
      */
     private Long productId;
+
     /**
      * 订单详情  订单Id
      */
@@ -38,6 +36,12 @@ public class OrderDetail extends BaseDto {
      */
     private Long surplus;
 
+    private BigDecimal detailPriceTotal;
+    /**
+     * 订单详情  产品名称
+     */
+    @Transient
+    private String productName;
     public Long getOrderDetailId() {
         return orderDetailId;
     }
@@ -84,5 +88,25 @@ public class OrderDetail extends BaseDto {
 
     public void setSurplus(Long surplus) {
         this.surplus = surplus;
+    }
+
+    public void setDetailNum(Integer detailNum) {
+        this.detailNum = detailNum;
+    }
+
+    public BigDecimal getDetailPriceTotal() {
+        return detailPriceTotal;
+    }
+
+    public void setDetailPriceTotal(BigDecimal detailPriceTotal) {
+        this.detailPriceTotal = detailPriceTotal;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 }

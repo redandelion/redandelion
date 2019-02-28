@@ -110,5 +110,11 @@ public  class BaseServiceImpl<T> implements IBaseService<T>{
         return num;
     }
 
+    @Override
+    public int batchDeleteByForeikey(T record) {
+
+        return  mapper.delete(record);
+    }
+
 
 }

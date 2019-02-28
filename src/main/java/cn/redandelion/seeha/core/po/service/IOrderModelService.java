@@ -9,5 +9,7 @@ import java.util.List;
 
 public interface IOrderModelService extends IBaseService<OrderModel> {
      Boolean orderNew(IRequest request , List<Supplier> suppliers) throws Exception;
+     List<OrderModel> orderQuery(IRequest requestContext,OrderModel orderModel,int page, int pagesize);
 
+     List<OrderModel> ordercheckChain(IRequest requestContext,List<OrderModel> orderModels);
 }
