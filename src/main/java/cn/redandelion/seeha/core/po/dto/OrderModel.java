@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Table(name = "ORDER_MODEL")
 @Entity
@@ -81,6 +82,21 @@ public class OrderModel extends BaseDto {
      */
     @Transient
     private String completerName;
+    /**
+     * 订单 入库数量
+     */
+    @Transient
+    private Integer inventoryNum;
+    /**
+     * 订单 仓库名称
+     */
+    @Transient
+    private Long inventory;
+
+    @Transient
+    private List<OrderDetail> orderDetailList;
+
+
     public Long getOrderId() {
         return orderId;
     }
@@ -207,5 +223,29 @@ public class OrderModel extends BaseDto {
 
     public void setCompleterName(String completerName) {
         this.completerName = completerName;
+    }
+
+    public List<OrderDetail> getOrderDetailList() {
+        return orderDetailList;
+    }
+
+    public void setOrderDetailList(List<OrderDetail> orderDetailList) {
+        this.orderDetailList = orderDetailList;
+    }
+
+    public Integer getInventoryNum() {
+        return inventoryNum;
+    }
+
+    public void setInventoryNum(Integer inventoryNum) {
+        this.inventoryNum = inventoryNum;
+    }
+
+    public Long getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Long inventory) {
+        this.inventory = inventory;
     }
 }

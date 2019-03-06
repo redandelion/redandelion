@@ -1,0 +1,221 @@
+
+<#include "../../../include/header.html">
+<body>
+
+
+<script>
+    var parentFunctionName;
+    $.ajax({
+        url:'${request.contextPath}/sys/functionParent/code',
+        type:'GET',
+        async:false,
+        success:function (data) {
+            parentFunctionName = data;
+        }
+    });
+    var viewModel = Hap.createGridViewModel("#grid",{
+        parentFunctionName:parentFunctionName,
+        saveAll:function () {
+
+            var result = viewModel.save();
+            kendo.ui.showInfoDialog({
+                title: $l('操作提示'),
+                message: "操作成功。"
+            }).done(function(){
+                window.location.reload();
+            })
+//
+        }
+
+    })
+
+</script>
+<div id="dialog"></div>
+<div id="resource-item-dialog"></div>
+<div id="page-content">
+    <div class="pull-left" id="toolbar-btn">
+        <span class="btn btn-primary k-grid-add"  data-hotkey="hotkey_create" style="float:left;margin-right:5px;" data-bind="click:create"><i class="fa fa-plus-square" style="margin-right:3px;"></i>新建</span>
+        <span class="btn btn-success k-grid-save-changes" data-hotkey="hotkey_save" data-bind="click:saveAll" style="float:left;margin-right:5px;"><i class="fa fa-save" style="margin-right:3px;"></i>保存</span>
+        <span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:remove" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除</span>
+
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='模块编码' data-bind="value:model.moduleCode" class="k-textbox">
+
+        <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='功能名称' data-bind="value:model.functionName" class="k-textbox">
+        <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:query" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i>查询</span>
+        <span class="btn btn-default" style="float:left;" data-bind="click:reset" type="button"><i class="fa fa-eraser" style="margin-right:3px;"></i>重置</span>
+        <div style="clear:both"></div>
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div style="clear:both">
+        <div id="grid"></div>
+    </div>
+    <div id="mywindow"></div>
+</div>
+
+<script>
+
+    Hap.initEnterQuery('#query-form', viewModel.query);
+    var row;
+    var data;
+    function openWindowEdit(functionId,id) {
+//        console.log(id+"------------"+functionId)
+        var url = '${request.contextPath}/user/resource/edit/';
+        if (functionId) {
+            url = url + functionId;
+        }
+        if (id) {
+
+            url = url +"/"+ id;
+        }
+
+         row = $("#grid").data("kendoGrid").selectedDataItems(); //
+//         data = $("#grid").data("kendoGrid").dataItem(row);
+//        console.log(row)
+//         console.log(data)
+        var editWin = Hap.createWindow('#mywindow', {
+            width: 900,
+            height: 600,
+            title: '编辑',
+            url: url
+        });
+
+        if (parent.autoResizeIframe) {
+            parent.autoResizeIframe('${RequestParameters.functionCode!}', 700, function () {
+                editWin.center().open();
+            })
+        } else {
+            editWin.center().open();
+        }
+    }
+    var dataSource = Hap.createGridDataSource({
+        url:"${request.contextPath}/sys/",
+        model: {
+            id: "functionId",
+            fields: {
+//                name: {validation: {required: true}}
+            }
+        },
+
+    });
+
+    var grid = $("#grid").kendoGrid({
+        dataSource: dataSource,
+        dataBound: function () {
+            if (parent.autoResizeIframe) {
+                parent.autoResizeIframe('${RequestParameters.functionCode!}')
+            }
+        },
+        scrollable: true,
+        navigatable: false,
+        editable: true,
+        sortable: true,
+        selectable: 'multiple,rowbox',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+            {
+                field: "moduleCode",
+                title: '模块编码',
+                width: 100,
+                sortable: {
+                    initialDirection: "asc"
+                }
+            },
+            {
+                field: "functionIcon",
+                title: '模块图标',
+                width: 150,
+                sortable: false,
+                template: function (item) {
+                    return Hap.escapeHtml((item.functionIcon || '')) + "<i class='" + item.functionIcon + "' style='width:16px;float:right'></i>"
+                }
+
+            }, {
+                field: "functionCode",
+                sortable: false,
+                title: '功能编码',
+                width: 120
+
+            }, {
+                field: "functionName",
+                sortable: false,
+                title: '功能名称',
+                width: 120
+
+            },
+            {
+                field: "functionSequence",
+                sortable: false,
+                title: '排序号',
+                width: 150
+            },
+            {
+                field: "functionDescription",
+                sortable: false,
+                title: 'description',
+                width: 150
+            },
+//            {
+//                field: "parentFunctionId",
+//                sortable: false,
+//                title: '父级功能',
+//                width: 150
+//            },
+            {
+                field: "parentFunctionId",
+                sortable: false,
+                title: '父级功能',
+                width: 150,
+                template: function (dataItem) {
+                    var v = dataItem.parentFunctionId||'';
+                    $.each(parentFunctionName, function(i, n) {
+                        if((n.value || '') == (v || '')) {
+                            v = n.meaning;
+                            return v;
+                        }
+                    });
+                    return v;
+                },
+                editor: function (container, options) {
+                    $('<input name = "'+ options.field
+                        +'"/>').appendTo(container).kendoDropDownList({
+                        dataTextField: "meaning",
+                        dataValueField: "value",
+                        dataSource: parentFunctionName,
+                        change:function(){
+                            options.model.set('parentFunctionId',this.value());
+                        }
+                    });
+                }
+            },
+
+            {
+                field: "resourceName",
+                sortable: false,
+                title: '资源名称',
+                width: 150,
+                template: function (rowdata) {
+                    if (!!rowdata.functionId){
+                        return Hap.createAnchor(rowdata.resourceName||'编辑', openWindowEdit,rowdata.functionId ,rowdata.resourceId );
+                    }
+                    return '';
+
+                },
+                editor: function(container, options){
+                    if (!!options.model.functionId) {
+                        container.html(options.model.resourceName || '编辑');
+                        container.removeClass('k-edit-cell');
+                    }
+                }
+            }]
+    }).data("kendoGrid");
+
+</script>
+</body>
+</html>

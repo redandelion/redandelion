@@ -2,11 +2,7 @@
 <#include "../../../include/header.html">
 <body>
 <script>
-    var viewModel = Hap.createGridViewModel("#grid", {
-//            model:{
-//            <#if resourceId?? >resourceId:${resourceId}</#if>
-//            }
-        })
+    var viewModel = Hap.createGridViewModel("#grid")
 </script>
 <div id="dialog"></div>
 <div id="resource-item-dialog"></div>
@@ -19,7 +15,7 @@
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='url' data-bind="value:model.url" class="k-textbox">
+        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='产品名称' data-bind="value:model.productName" class="k-textbox">
 
         <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='resource.name' data-bind="value:model.name" class="k-textbox">
         <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:query" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i>查询</span>
@@ -37,15 +33,13 @@
     Hap.initEnterQuery('#query-form', viewModel.query);
     console.log();
     var dataSource = Hap.createGridDataSource({
-        url:"${request.contextPath}/sys/resource/",
+        url:"${request.contextPath}/inv/detail/",
         model: {
-            id: "resourceId",
+            id: "detailId",
             fields: {
-                name: {validation: {required: true}},
-                loginRequire: {defaultValue: 'Y', type: 'boolean', checkedValue: 'Y', uncheckedValue: 'N'},
-                accessCheck: {defaultValue: 'Y', type: 'boolean', checkedValue: 'Y', uncheckedValue: 'N'},
-                type: {defaultValue: 'HTML'},
-                url: {validation: {required: true}}
+//                productType: {validation: {required: true}},
+//                supplierId:{defaultValue: 1},
+//                price: {validation: {required: true}}
             }
         }
     });
@@ -69,31 +63,25 @@
         },
         columns: [
             {
-                field: "url",
-                title: 'url',
+                field: "storeId",
+                title: '仓库id',
                 width: 240,
                 sortable: {
                     initialDirection: "asc"
                 }
             },
             {
-                field: "type",
-                title: 'type',
+                field: "productId",
+                title: '产品id',
                 width: 100,
                 sortable: false
 
             }, {
-                field: "name",
+                field: "num",
                 sortable: false,
-                title: 'name',
+                title: '剩余',
                 width: 120
 
-            },
-            {
-                field: "description",
-                sortable: false,
-                title: 'description',
-                width: 150
             }]
     }).data("kendoGrid");
 

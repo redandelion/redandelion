@@ -1,5 +1,7 @@
 package cn.redandelion.seeha.core.sys.function.conctroller;
 
+import cn.redandelion.seeha.core.inventory.dto.Store;
+import cn.redandelion.seeha.core.inventory.service.IStoreService;
 import cn.redandelion.seeha.core.po.dto.OrderModel;
 import cn.redandelion.seeha.core.po.service.IOrderModelService;
 import cn.redandelion.seeha.core.supplier.dto.Supplier;
@@ -24,6 +26,8 @@ public class SysController {
     @Autowired
     private IOrderModelService orderModelService;
 
+    @Autowired
+    private IStoreService storeService;
     @RequestMapping("/index")
     public String index(){
         return "index";
@@ -56,10 +60,17 @@ public class SysController {
         map.put("orderState",orderState);
         return "po/order";
     }
+    /**
+     *  订单详情
+     */
     @RequestMapping("/po/detail")
     public String orderDetail(){
         return "po/order_detail";
     }
+
+    /**
+     *  新建采购订单
+     */
 
     @RequestMapping("/po/new")
     public String orderNew(Model map){
@@ -81,4 +92,53 @@ public String OrderEdit(ModelMap map,@PathVariable(required = false) Long orderI
     map.put("orderModel",orderModel);
     return "po/order_edit";
 }
+    /**
+     *   仓库
+     */
+
+    @RequestMapping("/inv")
+    public String store(ModelMap map){
+
+        return "inv/store";
+    }
+    /**
+     *   //    仓库编辑
+     */
+    @RequestMapping("/inv/edit/{storeId}")
+    public String storeEdit(ModelMap map,@PathVariable(required = false) Long storeId){
+        Store store = new Store();
+        store.setStoreId(storeId);
+        store = storeService.selectByPrimaryKey(null,store);
+        map.put("store",store);
+        return "inv/store_edit";
+    }
+    /**
+     *   仓库明细
+      */
+    @RequestMapping("/inv/detail")
+    public String storeDetail(ModelMap map){
+
+        return "inv/store_detail";
+    }
+    /**
+     *   //    仓库日记
+     */
+    @RequestMapping("/inv/log")
+    public String storeLog(ModelMap map){
+
+        return "inv/store_log";
+    }
+    @RequestMapping("/sys/function")
+    public String function(ModelMap map){
+
+        return "sys/sys_function";
+    }
+//  功能分配
+@RequestMapping("/sys/function/role")
+public String functionRole(ModelMap map){
+//        todo
+    map.put("roleId","10002");
+    return "sys/sys_role_function";
+}
+
 }

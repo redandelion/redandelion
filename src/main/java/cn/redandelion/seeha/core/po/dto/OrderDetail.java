@@ -34,7 +34,7 @@ public class OrderDetail extends BaseDto {
     /**
      * 订单详情  订单Id
      */
-    private Long surplus;
+    private Integer surplus;
 
     private BigDecimal detailPriceTotal;
     /**
@@ -82,11 +82,11 @@ public class OrderDetail extends BaseDto {
         this.orderId = orderId;
     }
 
-    public Long getSurplus() {
+    public Integer getSurplus() {
         return surplus;
     }
 
-    public void setSurplus(Long surplus) {
+    public void setSurplus(Integer surplus) {
         this.surplus = surplus;
     }
 

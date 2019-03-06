@@ -92,11 +92,22 @@ public  class BaseServiceImpl<T> implements IBaseService<T>{
     }
 
     @Override
+    public List<T> selectByExample(Object record) {
+        List<T> list = mapper.selectByExample(record);
+        return list;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public List<T> batchUpdate(IRequest request, List<T> list) {
-//        list.forEach(x->{
-//
-//        });
+        list.forEach(x->{
+            T t = mapper.selectByPrimaryKey(x);
+            if (t!=null){
+                mapper.updateByPrimaryKeySelective(x);
+            }else {
+                mapper.insert(x);
+            }
+        });
         return list;
     }
 

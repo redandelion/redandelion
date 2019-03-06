@@ -3,18 +3,51 @@
 <body>
 <script>
     var viewModel = Hap.createGridViewModel("#grid", {
-//            model:{
-//            <#if resourceId?? >resourceId:${resourceId}</#if>
-//            }
-        })
+        model: {
+            <#if resourceId?? >resourceId:${resourceId}</#if>
+        },
+        save: function () {
+
+            var row = $("#grid").data("kendoGrid").select(); //
+            var data = $("#grid").data("kendoGrid").dataItem(row);
+            //获取选中行元素数
+            var dataParent = window.parent.$("#grid").data("kendoGrid")._data;
+            var num;
+            $.each(dataParent,function(i,v){
+
+                if(v.functionId==${functionId}){
+
+                    v.resourceName = data.name;
+                    num = i;
+                    window.parent.$("#grid").data("kendoGrid")._data[i].resourceName = data.name;
+                    window.parent.$("#grid").data("kendoGrid")._data[i].resourceId = data.resourceId;
+                }
+            });
+            window.parent.$("#grid").data("kendoGrid").refresh();
+            window.parent.$("#grid").data("kendoGrid")._data[num].dirty=true;
+
+//            console.log(window.parent.data)
+//            console.log(window.parent.viewModel.resourceName);
+            closeWin();
+        },
+        close: function () {
+            closeWin();
+        }
+    })
+    function closeWin() {
+        //关闭#score-window窗口的父页面
+        window.parent.$('#mywindow').data("kendoWindow").close();
+
+    }
+
 </script>
 <div id="dialog"></div>
 <div id="resource-item-dialog"></div>
 <div id="page-content">
     <div class="pull-left" id="toolbar-btn">
-        <span class="btn btn-primary k-grid-add"  data-hotkey="hotkey_create" style="float:left;margin-right:5px;" data-bind="click:create"><i class="fa fa-plus-square" style="margin-right:3px;"></i>新建</span>
-        <span class="btn btn-success k-grid-save-changes" data-hotkey="hotkey_save" data-bind="click:save" style="float:left;margin-right:5px;"><i class="fa fa-save" style="margin-right:3px;"></i>保存</span>
-        <span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:remove" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除</span>
+        <!--<span class="btn btn-primary k-grid-add"  data-hotkey="hotkey_create" style="float:left;margin-right:5px;" data-bind="click:create"><i class="fa fa-plus-square" style="margin-right:3px;"></i>新建</span>-->
+        <!--<span class="btn btn-success k-grid-save-changes" data-hotkey="hotkey_save" data-bind="click:save" style="float:left;margin-right:5px;"><i class="fa fa-save" style="margin-right:3px;"></i>保存</span>-->
+        <!--<span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:remove" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除</span>-->
 
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
@@ -30,6 +63,13 @@
     <div style="clear:both">
         <div id="grid"></div>
     </div>
+
+    <div class="text-right k-window-toolbar" id="gridToolbar">
+        <span class="btn btn-primary" id="orderStateChage" data-hotkey="hotkey_save" style="margin-right: 10px"  data-bind="click:save">选择 </span>
+        <span class="btn btn-default" data-hotkey="hotkey_cancel" data-bind="click:close" type="button"  >取消</span>
+
+    </div>
+    <script>kendo.bind($("#gridToolbar"), viewModel);</script>
 </div>
 
 <script>
@@ -41,13 +81,10 @@
         model: {
             id: "resourceId",
             fields: {
-                name: {validation: {required: true}},
-                loginRequire: {defaultValue: 'Y', type: 'boolean', checkedValue: 'Y', uncheckedValue: 'N'},
-                accessCheck: {defaultValue: 'Y', type: 'boolean', checkedValue: 'Y', uncheckedValue: 'N'},
-                type: {defaultValue: 'HTML'},
-                url: {validation: {required: true}}
+
             }
-        }
+        },
+        pageSize:10,
     });
 
     var grid = $("#grid").kendoGrid({
@@ -61,9 +98,9 @@
         navigatable: false,
         editable: true,
         sortable: true,
-        selectable: 'multiple,rowbox',
+        selectable: 'rowbox',
         pageable: {
-            pageSizes: [5, 10, 20, 50],
+            pageSizes: [5,10,20,50],
             refresh: true,
             buttonCount: 5
         },

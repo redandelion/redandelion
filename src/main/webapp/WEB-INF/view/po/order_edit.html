@@ -2,28 +2,145 @@
 <#include "../../../include/header.html">
 <body>
 <script>
+    var userName;
+    var inventoryName;
+<#if orderState?number ==2>
+$.ajax({
+    url:'${request.contextPath}/user/code',
+    type:'GET',
+    async:false,
+    success:function (data) {
+        userName = data;
+    }
+});
+</#if>
+//    仓库
+
+<#if orderState?number ==3>
+    $.ajax({
+        url:'${request.contextPath}/inv/code',
+        type:'GET',
+        async:false,
+        success:function (data) {
+            inventoryName = data;
+        }
+    });
+</#if>
+</script>
+<script>
+//    console.log(inventoryName);
+//    console.log(${orderState});
     var viewModel = Hap.createGridViewModel("#grid",{
+        userName:userName,
+        inventoryName:inventoryName,
         model:{
-            orderId:'${orderModel.orderId}'
+            orderId:'${orderModel.orderId}',
+            completer:"",
+            inventory:"",
+            inventoryNum:""
         },
+
         save:function () {
-            Hap.submitForm({
-                url: '${request.contextPath}/po/order/check',
-                formModel: viewModel.model,
-//                    contentType:'application/json',
-                success: function (data) {
-                    <!--刷新父页面-->
-                    window.parent.viewModel.refresh();
-                    <!--关闭父页面打开的窗口-->
-                    closeWin();
+
+
+            if (validator==undefined||validator.validate()) {
+//                是否入库
+                if (${orderState}==3)
+                {
+                    that = this;
+                    var row = $("#grid").data("kendoGrid").select(); //
+                    var data = $("#grid").data("kendoGrid").dataItem(row); //获取选中行元素数
+//                    手动设置选中元素
+                    data.dirty = true;
+
+
+                    if (row.length==0){
+//                        明细判断
+                        kendo.ui.showErrorDialog({
+                            title: $l('错误提示'),
+                            message: "请选择入库明细。"
+                        });
+                        return ;
+                    }
+//                    判断已经入库完毕记录
+                    if (data.surplus == 0){
+                        kendo.ui.showErrorDialog({
+                            title: $l('错误提示'),
+                            message: "该产品已入库完毕。"
+                        });
+                        return ;
+                    }
+//                  判断入库数量是否合法
+                    if(viewModel.model.inventoryNum > data.surplus ||viewModel.model.inventoryNum<0 ){
+                        kendo.ui.showErrorDialog({
+                            title: $l('错误提示'),
+                            message: "入库数量不正确。"
+                        });
+                        return ;
+                    }
+
+//                入库入口todo
+                    Hap.submitForm({
+                        url: '${request.contextPath}/po/order/check',
+                        formModel: viewModel.model,
+//                        contentType:'application/json',
+                        grid: {
+                            "orderDetailList":  $("#grid")
+                        },
+                        success: function (data) {
+//                            console.log(data);
+                            if (data.success==true) {
+                                console.log(data);
+                                kendo.ui.showInfoDialog({
+                                    title: $l('操作提示'),
+                                    message: "操作成功。"
+                                }).done(function(){
+                                    window.parent.viewModel.refresh();
+                                    closeWin();
+                                })
+                            }
+                            <!--刷新父页面-->
+//                            window.parent.viewModel.dataSource.page(1)
+//                            window.parent.viewModel.refresh();
+                            <!--关闭父页面打开的窗口-->
+
+                        }
+                    });
                 }
-            });
+//                审批与确认入口
+            else
+                {
+                    Hap.submitForm({
+                        url: '${request.contextPath}/po/order/check',
+                        formModel: viewModel.model,
+//                    contentType:'application/json',
+                        success: function (data) {
+                            if (data.success == true) {
+                                console.log(data);
+                                kendo.ui.showInfoDialog({
+                                    title: $l('操作提示'),
+                                    message: "操作成功。"
+                                }).done(function () {
+                                    window.parent.viewModel.refresh();
+                                    closeWin();
+                                });
+                                <!--刷新父页面-->
+//                            window.parent.viewModel.refresh();
+//
+                                <!--关闭父页面打开的窗口-->
+//                            closeWin();
+                            }
+                        }
+                    });
+                }
+            }
         },
 
         close: function () {
             closeWin();
         }
     });
+
     function closeWin() {
         //关闭#score-window窗口的父页面
         window.parent.$('#mywindow').data("kendoWindow").close();
@@ -131,6 +248,58 @@
         <!--<span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:remove" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除</span>-->
 
     </div>
+    <!--委派人  -->
+    <#if orderState?number ==2 >
+    <div >
+        <form >
+            <div id="form">
+                <div  class="form-group" style="width: 37%">
+                    <label class="col-xs-4  control-label" style="text-align: right;line-height: 32px">委派采购员</label>
+                    <div class="col-xs-8" >
+                        <select  id="completer" name="completer" required validationMessage="采购员为必选"
+                                 data-role="combobox" data-value-primitive="true"
+                                 style="width: 100%;border:1px;"
+                                 data-text-field="meaning" data-value-field="value"
+                                 data-bind="enabled: model.isEnabledLook,source:userName,value:model.completer">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <script>kendo.bind($('#completer'), viewModel);</script>
+    </div>
+    </#if >
+    <!--仓库  -->
+    <#if orderState?number ==3 >
+        <div >
+            <form >
+                <div id="form">
+                    <div  class="form-group" style="width: 37%">
+                        <label class="col-xs-4  control-label" style="text-align: right;line-height: 32px">选择仓库</label>
+                        <div class="col-xs-8" >
+                            <select  id="inventory" name="inventory" required validationMessage="仓库为必选"
+                                     data-role="combobox" data-value-primitive="true"
+                                     style="width: 100%;border:1px;"
+                                     data-text-field="meaning" data-value-field="value"
+                                     data-bind="enabled: model.isEnabledLook,source:inventoryName,value:model.inventory">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right;line-height: 32px;">入库数量</label>
+                        <div class="col-xs-2">
+
+                            <input id="inventoryNum" name="inventoryNum"  type="text" data-bind="value:model.inventoryNum" data-role="maskedtextbox" style="width: 100%;" required data-label="入库数量">
+                            <script>kendo.bind($('#inventoryNum'), viewModel);</script>
+                        </div>
+                </div>
+
+
+            </form>
+
+            <script>kendo.bind($('#inventory'), viewModel);</script>
+        </div>
+    </#if >
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
         <!--<input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='产品名称' data-bind="value:model.productName" class="k-textbox">-->
@@ -146,7 +315,7 @@
     </div>
 </div>
 <div class="text-right k-window-toolbar" id="gridToolbar">
-    <#if orderState gt 0  >
+    <#if orderState gt 0 &&  orderState lt 4 >
     <span class="btn btn-primary" id="orderStateChage" data-hotkey="hotkey_save" style="margin-right: 10px"  data-bind="click:save"> </span>
 
         <script>
@@ -157,6 +326,9 @@
 </div>
 <script>kendo.bind($("#gridToolbar"), viewModel);</script>
 <script>
+    var validator = $("#form").kendoValidator({
+//    invalidMessageType : "tooltip" // 悬浮提示框
+    }).data("kendoValidator");
 
     Hap.initEnterQuery('#query-form', viewModel.query);
     console.log();
@@ -183,7 +355,11 @@
         navigatable: false,
         editable: false,
         sortable: true,
-        selectable: 'multiple,rowbox',
+        <#if orderState?number ==3 >
+         selectable: 'rowbox',
+        <#else>
+         selectable: true,
+       </#if>
         pageable: {
             pageSizes: [5, 10, 20, 50],
             refresh: true,
@@ -222,14 +398,32 @@
                 field: "detailNum",
                 sortable: false,
                 title: '数量',
-                width: 120
+                width: 100
             },
             {
                 field: "detailPriceTotal",
                 sortable: false,
                 title: '总价',
                 width: 150
-            }]
+            }
+        <#if orderState?number ==3 >
+            ,{
+//            field: "inventory",
+             sortable: false,
+             title: '已入库数量',
+             width: 100,
+             template: function (rowdata) {
+              return rowdata.detailNum - rowdata.surplus;
+             }
+        }
+        ,{
+            field: "surplus",
+            sortable: false,
+            title: '剩余数量',
+            width: 100
+        }
+        </#if>
+        ]
     }).data("kendoGrid");
 
 </script>

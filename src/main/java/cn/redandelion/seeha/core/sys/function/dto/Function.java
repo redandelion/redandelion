@@ -5,6 +5,7 @@ import cn.redandelion.seeha.core.sys.basic.dto.BaseDto;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
@@ -18,7 +19,7 @@ public class Function extends BaseDto {
     private String moduleCode;
 
     private String functionIcon;
-    @NotEmpty
+
     private String functionCode;
 
     private String functionName;
@@ -35,6 +36,12 @@ public class Function extends BaseDto {
 
     private Long functionSequence;
 
+//    父级功能名称
+    @Transient
+    private String parentFunctionName;
+//    资源名称
+    @Transient
+    private String resourceName;
     public Long getFunctionId() {
         return functionId;
     }
@@ -121,6 +128,22 @@ public class Function extends BaseDto {
 
     public void setFunctionDescription(String functionDescription) {
         this.functionDescription = functionDescription;
+    }
+
+    public String getParentFunctionName() {
+        return parentFunctionName;
+    }
+
+    public void setParentFunctionName(String parentFunctionName) {
+        this.parentFunctionName = parentFunctionName;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 
     @Override
