@@ -32,18 +32,31 @@ public class Product extends BaseDto {
      */
 
     private BigDecimal price;
-
     /**
      *     产品 销售价格
+     */
+    private BigDecimal outPrice;
+    /**
+     *     产品 销售总价格
      */
     private BigDecimal totalPrice;
     /**
      *     产品 描述
      */
+    private String productOtherDesc;
+    /**
+     *     产品 单位
+     */
+    private String unit;
+    /**
+     *     产品 生成者
+     */
+    private String producer;
+
     @Transient
     private int number;
 
-    private String productOtherDesc;
+
 
     public Long getProductId() {
         return productId;
@@ -107,5 +120,29 @@ public class Product extends BaseDto {
 
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getProducer() {
+        return producer;
+    }
+
+    public void setProducer(String producer) {
+        this.producer = producer;
+    }
+
+    public BigDecimal getOutPrice() {
+        return outPrice;
+    }
+
+    public void setOutPrice(BigDecimal outPrice) {
+        this.outPrice = outPrice;
     }
 }

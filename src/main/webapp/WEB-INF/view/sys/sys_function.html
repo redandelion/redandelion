@@ -16,14 +16,14 @@
     var viewModel = Hap.createGridViewModel("#grid",{
         parentFunctionName:parentFunctionName,
         saveAll:function () {
-
             var result = viewModel.save();
-            kendo.ui.showInfoDialog({
-                title: $l('操作提示'),
-                message: "操作成功。"
-            }).done(function(){
-                window.location.reload();
-            })
+
+                kendo.ui.showInfoDialog({
+                    title: $l('操作提示'),
+                    message: "操作成功。"
+                }).done(function () {
+                    window.location.reload();
+                })
 //
         }
 

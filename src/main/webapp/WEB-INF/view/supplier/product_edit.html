@@ -262,30 +262,49 @@ var validator = $("#form").kendoValidator({
         columns: [
             {
                 field: "productName",
-                title: 'productName',
-                width: 240,
+                title: '产品名称',
+                width: 120,
                 sortable: {
                     initialDirection: "asc"
                 }
+            },{
+                field: "producer",
+                sortable: false,
+                title: '生产商',
+                width: 100
+
             },
             {
                 field: "productType",
-                title: 'productType',
+                title: '产品类型',
                 width: 100,
                 sortable: false
 
             }, {
                 field: "price",
                 sortable: false,
-                title: 'price',
-                width: 120
+                title: '成本价格',
+                width: 80
 
+            }, {
+                field: "outPrice",
+                sortable: false,
+                title: '销售价格',
+                width: 80
+
+            },
+
+            {
+                field: "unit",
+                sortable: false,
+                title: '单位',
+                width: 80
             },
             {
                 field: "productOtherDesc",
                 sortable: false,
-                title: 'description',
-                width: 150
+                title: '描述',
+                width: 100
             }]
     }).data("kendoGrid");
 

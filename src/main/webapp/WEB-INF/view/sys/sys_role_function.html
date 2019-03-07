@@ -1,9 +1,19 @@
 <#include "../include/header.html">
 <body>
 <script type="text/javascript">
+    var userName;
+    $.ajax({
+        url:'${request.contextPath}/user/code',
+        type:'GET',
+        async:false,
+        success:function (data) {
+            userName = data;
+        }
+    });
     var viewModel = kendo.observable({
+        userName:userName,
         model: {
-            roleId: ${roleId}
+            roleId: ${roleId?c}
         },
         query: function (e) {
             $('#grid').data('kendoTreeList').dataSource.read();
@@ -23,10 +33,16 @@
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
         <div style="float:left;margin-right:5px;">
-            <input type="text" id="role" style="width:150px;" data-bind="value:model.roleId">
-            <script>
-//               <!--角色选择 -->
-            </script>
+            <select  id="userName" name="userName" required validationMessage="采购员为必选"
+                     data-role="combobox" data-value-primitive="true"
+                     style="width: 100%;border:1px;"
+                     data-text-field="meaning" data-value-field="value"
+                     data-bind="enabled: model.isEnabledLook,source:userName,value:model.roleId">
+            </select>
+            <script>kendo.bind($('#userName'), viewModel);</script>
+
+               <!--角色选择 -->
+
         </div>
         <span class="btn btn-primary" id="query"  data-bind="click:query" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i>查询</span>
 

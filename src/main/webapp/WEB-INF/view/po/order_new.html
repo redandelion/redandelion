@@ -3,7 +3,7 @@
     <!--<script src="/supplier/code" type="application/json">-->
     <!--</script>-->
 <body>
-<script> var supplierName;
+<script> var supplierName;var supplierId;
     $.ajax({
         url:'${request.contextPath}/supplier/code',
         type:'GET',
@@ -12,6 +12,15 @@
             supplierName = data;
         }
     });
+
+     $.each(supplierName,function(i,v){
+        if (v.meaning=="seeha"){
+
+//        获取系统供应商
+            supplierId = v.value;
+        }
+     })
+
 </script>
 <script>
 
@@ -20,12 +29,13 @@
     var viewModel = Hap.createGridViewModel("#grid",{
         supplierName:supplierName,
         model:{
-            supplierId:""
+            <#if orderType?number == 1>  supplierId:supplierId  <#else>  supplierId:""  </#if>
+
         },
         save: function () {
             if (validator.validate()) {
                 Hap.submitForm({
-                    url: '${request.contextPath}/po/order/new',
+                    url: '${request.contextPath}/po/order/new/${orderType}',
                     formModel: viewModel.model,
 //                    contentType:'application/json',
                     grid: {
@@ -56,7 +66,15 @@
         <form >
             <div id="form">
                 <div  class="form-group" style="width: 37%">
-                    <label class="col-xs-4  control-label" style="text-align: right;line-height: 32px">供应商名称</label>
+
+                    <label class="col-xs-4  control-label" style="text-align: right;line-height: 32px">
+                        <#if orderType?number == 1>
+                              客户名称
+                         <#else>
+                             供应商名称
+                        </#if>
+
+                    </label>
                     <div class="col-xs-8" >
                         <select  id="supplierId" name="supplierId" required validationMessage="供应商为必选"
                                  data-role="combobox" data-value-primitive="true"
@@ -85,7 +103,7 @@
     </div>
 </div>
 <div class="text-right k-window-toolbar" id="gridToolbar">
-   <span class="btn btn-primary" data-hotkey="hotkey_save" style="margin-right: 10px"  data-bind="click:save"> 申请采购</span>
+   <span class="btn btn-primary" data-hotkey="hotkey_save" style="margin-right: 10px"  data-bind="click:save"> 申请</span>
     <span class="btn btn-default" data-hotkey="hotkey_cancel" data-bind="click:close" type="button"  >取消</span>
 </div>
 <script>kendo.bind($("#gridToolbar"), viewModel);</script>
@@ -96,7 +114,9 @@
         var selectSupplier = $("#supplierId option:selected").val();
 //        console.log(selectSupplier)
         viewModel.model.supplierId = selectSupplier;
+        <#if orderType?number != 1>
         viewModel.query();
+        </#if>
     });
 var validator = $("#form").kendoValidator({
 //    invalidMessageType : "tooltip" // 悬浮提示框
@@ -170,12 +190,12 @@ var validator = $("#form").kendoValidator({
                 }
 
             }, {
-                field: "price",
+                field: "outPrice",
                 sortable: false,
                 title: '单价',
                 width: 120,
                 editor: function(container, options){
-                    container.html(options.model.price);
+                    container.html(options.model.outPrice);
                     container.removeClass('k-edit-cell');
                 }
             },
@@ -200,7 +220,7 @@ var validator = $("#form").kendoValidator({
                     input.kendoNumericTextBox({
                     change:function() {
 //                        console.log(options.model.price)
-                        options.model.set('totalPrice',options.model.price*options.model.number)
+                        options.model.set('totalPrice',options.model.outPrice*options.model.number)
                     }
                   })
                 }

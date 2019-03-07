@@ -66,8 +66,9 @@ public class OrderModelController extends BaseController {
         return new ResponseData();
     }
 //    新建采购订单
-    @PostMapping(value = "/new")
+    @PostMapping(value = "/new/{orderType}")
     public ResponseData saveSupplierInof(HttpServletRequest request, @RequestBody List<Supplier> suppliers,
+                                         @PathVariable Integer orderType,
                                          BindingResult result)throws Exception {
         List<Supplier> list = new ArrayList<>();
         if (result.hasErrors()) {
@@ -79,7 +80,7 @@ public class OrderModelController extends BaseController {
 
         ResponseData responseData = new ResponseData();
         IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
-        Boolean flagNew= service.orderNew(requestContext,suppliers);
+        Boolean flagNew= service.orderNew(requestContext,suppliers,orderType);
         responseData.setRows(list);
         responseData.setSuccess(flagNew);
         return responseData;

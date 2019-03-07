@@ -37,7 +37,8 @@ $.ajax({
             orderId:'${orderModel.orderId}',
             completer:"",
             inventory:"",
-            inventoryNum:""
+            inventoryNum:"",
+
         },
 
         save:function () {
@@ -51,34 +52,48 @@ $.ajax({
                     var row = $("#grid").data("kendoGrid").select(); //
                     var data = $("#grid").data("kendoGrid").dataItem(row); //获取选中行元素数
 //                    手动设置选中元素
-                    data.dirty = true;
-
-
                     if (row.length==0){
 //                        明细判断
                         kendo.ui.showErrorDialog({
                             title: $l('错误提示'),
-                            message: "请选择入库明细。"
+                            message: seeha.errorMaseege['${orderModel.orderType}']
                         });
                         return ;
                     }
+                    data.dirty = true;
+
 //                    判断已经入库完毕记录
                     if (data.surplus == 0){
                         kendo.ui.showErrorDialog({
                             title: $l('错误提示'),
-                            message: "该产品已入库完毕。"
+                            message: seeha.errorMaseegeOfInv['${orderModel.orderType}']
                         });
                         return ;
                     }
 //                  判断入库数量是否合法
-                    if(viewModel.model.inventoryNum > data.surplus ||viewModel.model.inventoryNum<0 ){
+                    if(viewModel.model.inventoryNum<=0 ){
+                        kendo.ui.showErrorDialog({
+                            title: $l('错误提示'),
+                            message: "数量不正确。"
+                        });
+                        return ;
+                    }
+                    if(viewModel.model.inventoryNum > data.surplus ||viewModel.model.inventoryNum<=0 ){
                         kendo.ui.showErrorDialog({
                             title: $l('错误提示'),
                             message: "入库数量不正确。"
                         });
                         return ;
                     }
-
+                    <#if orderModel.orderType?number == 1>
+                    if(viewModel.model.inventoryNum > data.inventory ){
+                        kendo.ui.showErrorDialog({
+                            title: $l('错误提示'),
+                            message: "库存现有量不足。"
+                        });
+                        return ;
+                    }
+                    </#if>
 //                入库入口todo
                     Hap.submitForm({
                         url: '${request.contextPath}/po/order/check',
@@ -214,7 +229,7 @@ $.ajax({
             <label class="col-xs-4  control-label" style="text-align: right">订单状态</label>
             <div class="col-xs-8" id="orderState">
                 <script>
-                    $("#orderState").html(seeha.orderStatus['${orderModel.orderState}'])
+                    $("#orderState").html(seeha.orderStatus['${orderModel.orderType}']['${orderModel.orderState}'])
                 </script>
                 <!--<input id="fullName" name="fullName"  min="1" max="10" type="text" data-bind="enabled: model.isEnabledLook,value:model.fullName" data-role="maskedtextbox" style="width: 100%;" required data-label="供应商名称">-->
                 <!--<script>kendo.bind($('#fullName'), viewModel);</script>-->
@@ -254,7 +269,7 @@ $.ajax({
         <form >
             <div id="form">
                 <div  class="form-group" style="width: 37%">
-                    <label class="col-xs-4  control-label" style="text-align: right;line-height: 32px">委派采购员</label>
+                    <label class="col-xs-4  control-label" style="text-align: right;line-height: 32px"><#if orderModel.orderType !=1>委派采购员 <#else>委派销售员</#if></label>
                     <div class="col-xs-8" >
                         <select  id="completer" name="completer" required validationMessage="采购员为必选"
                                  data-role="combobox" data-value-primitive="true"
@@ -286,7 +301,7 @@ $.ajax({
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-2  control-label" style="text-align: right;line-height: 32px;">入库数量</label>
+                        <label class="col-xs-2  control-label" style="text-align: right;line-height: 32px;"><#if orderModel.orderType !=1>入库数量 <#else>出库数量</#if></label>
                         <div class="col-xs-2">
 
                             <input id="inventoryNum" name="inventoryNum"  type="text" data-bind="value:model.inventoryNum" data-role="maskedtextbox" style="width: 100%;" required data-label="入库数量">
@@ -319,7 +334,7 @@ $.ajax({
     <span class="btn btn-primary" id="orderStateChage" data-hotkey="hotkey_save" style="margin-right: 10px"  data-bind="click:save"> </span>
 
         <script>
-            $("#orderStateChage").html(seeha.orderStatusChain['${orderState}'])
+            $("#orderStateChage").html(seeha.orderStatusChain['${orderModel.orderType}']['${orderState}'])
         </script>
     </#if>
     <span class="btn btn-default" data-hotkey="hotkey_cancel" data-bind="click:close" type="button"  >取消</span>
@@ -329,7 +344,14 @@ $.ajax({
     var validator = $("#form").kendoValidator({
 //    invalidMessageType : "tooltip" // 悬浮提示框
     }).data("kendoValidator");
-
+//    库存现有量
+    $("#inventory").change(function(){
+        //获取当前select选择的值
+        var inventory = $("#inventory option:selected").val();
+//        console.log(selectSupplier)
+        viewModel.model.inventory = inventory;
+        viewModel.query();
+    });
     Hap.initEnterQuery('#query-form', viewModel.query);
     console.log();
     var dataSource = Hap.createGridDataSource({
@@ -392,19 +414,19 @@ $.ajax({
                 field: "detailPrice",
                 sortable: false,
                 title: '单价',
-                width: 120
+                width: 80
 
             },{
                 field: "detailNum",
                 sortable: false,
                 title: '数量',
-                width: 100
+                width: 80
             },
             {
                 field: "detailPriceTotal",
                 sortable: false,
                 title: '总价',
-                width: 150
+                width: 120
             }
         <#if orderState?number ==3 >
             ,{
@@ -420,8 +442,14 @@ $.ajax({
             field: "surplus",
             sortable: false,
             title: '剩余数量',
-            width: 100
+            width: 80
         }
+        ,{
+        field: "inventory",
+        sortable: false,
+        title: '库存现有量',
+        width: 100
+    }
         </#if>
         ]
     }).data("kendoGrid");

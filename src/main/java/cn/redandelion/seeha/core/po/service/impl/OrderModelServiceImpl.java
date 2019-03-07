@@ -10,6 +10,7 @@ import cn.redandelion.seeha.core.po.service.IOrderDetailService;
 import cn.redandelion.seeha.core.po.service.IOrderModelService;
 import cn.redandelion.seeha.core.supplier.dto.Product;
 import cn.redandelion.seeha.core.supplier.dto.Supplier;
+import cn.redandelion.seeha.core.supplier.service.IProductService;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import cn.redandelion.seeha.core.sys.basic.service.impl.BaseServiceImpl;
 import cn.redandelion.seeha.core.user.dto.User;
@@ -36,6 +37,8 @@ public class OrderModelServiceImpl extends BaseServiceImpl<OrderModel> implement
     private IStoreLogService storeLogService;
     @Autowired
     private IStoreDetailService storeDetailService;
+    @Autowired
+    private IProductService productService;
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<OrderModel> batchUpdate(IRequest request, List<OrderModel> list) {
@@ -51,16 +54,16 @@ public class OrderModelServiceImpl extends BaseServiceImpl<OrderModel> implement
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean orderNew(IRequest request, List<Supplier> suppliers) throws Exception {
+    public Boolean orderNew(IRequest request, List<Supplier> suppliers,Integer orderType) throws Exception {
 //        1 设置采购订单头，
           OrderModel orderModel = new OrderModel();
 //            1.1 获取创建者
 
         orderModel.setCreater(request.getUserId());
         orderModel.setCreateTime(new Date());
-        //  1.2 设置采购订单状态 为0 以及类型 0 为采购订单
+        //  1.2 设置采购订单状态 为0 以及类型 0 为采购订单, 1为销售订单
         orderModel.setOrderState(0);
-        orderModel.setOrderType(0);
+        orderModel.setOrderType(orderType);
         //  1.3 设置供应商
         orderModel.setSupplierId(suppliers.get(0).getSupplierId());
         //  1.4 设置订单头金额与明细条数
@@ -81,7 +84,7 @@ public class OrderModelServiceImpl extends BaseServiceImpl<OrderModel> implement
                 orderDetail.setProductId(x.getProductId());
                 orderDetail.setDetailNum(x.getNumber());
                 orderDetail.setSurplus(x.getNumber());
-                orderDetail.setDetailPrice(x.getPrice());
+                orderDetail.setDetailPrice(x.getOutPrice());
                 orderDetail.setDetailPriceTotal(x.getTotalPrice());
                 detailService.insertSelective(request,orderDetail);
             });
@@ -159,7 +162,7 @@ public class OrderModelServiceImpl extends BaseServiceImpl<OrderModel> implement
         if (orderModel.getOrderState()==1){
             orderModel.setCompleter(completer);
         }
-//        设置完结人完成时间(入库时间) 刷新库存 入库
+//        设置完结人完成时间(入库时间) 刷新库存 入库  出库
         if (orderModel.getOrderState()==2){
 //        入库数量
             int inventoryNum = orderModels.get(0).getInventoryNum();
@@ -169,26 +172,47 @@ public class OrderModelServiceImpl extends BaseServiceImpl<OrderModel> implement
             OrderDetail orderDetail = detailService.selectByPrimaryKey(requestContext, orderModels.get(0).getOrderDetailList().get(0));
             orderDetail.setSurplus(orderDetail.getSurplus()-inventoryNum);
             orderDetail = detailService.updateByPrimaryKey(requestContext,orderDetail);
+
+            if (orderModel.getOrderType()==0) {
 //          2.更新库存明细表  根据仓库id以及产品id确定唯一
-            storeDetail.setProductId(orderDetail.getProductId());
-            storeDetail.setStoreId(inventory);
-//            选出库存明细记录
-            List<StoreDetail> storeDetails = storeDetailService.selectByCondition(storeDetail);
-//                2.1 商品存在则更新
-            if (storeDetails.size()>0){
-                storeDetails.get(0).setNum(storeDetails.get(0).getNum()+inventoryNum);
-                  storeDetailService.updateByPrimaryKey(requestContext,storeDetails.get(0));
+                storeDetail.setProductId(orderDetail.getProductId());
+                storeDetail.setStoreId(inventory);
+//                入库操作
+                operationInv(requestContext,storeDetail,inventoryNum);
             }else {
-//                2.2 不存在则插入
-                storeDetail.setNum(inventoryNum);
-                storeDetailService.insertSelective(requestContext,storeDetail);
+//            出库操作
+//                可能存在多个暂时只处理一个
+
+                Product product = new Product();
+                Product productTemp = new Product();
+                product.setProductId(orderDetail.getProductId());
+                Long productId = orderDetail.getProductId();
+                product = productService.selectByPrimaryKey(requestContext, product);
+//                产品唯一标识 生产商 + 产品名称
+                productTemp.setProducer(product.getProducer());
+                productTemp.setProductName(product.getProductName());
+
+                List<Product> products = productService.selectByCondition(productTemp);
+                products.forEach(x->{
+//                    扣库存R
+                    if (!x.getProductId().equals(productId)) {
+                        storeDetail.setProductId(products.get(0).getProductId());
+                    }
+                });
+
+
+                storeDetail.setStoreId(inventory);
+//                出库传负值
+                operationInv(requestContext,storeDetail,-inventoryNum);
+
             }
+
 //         3. 添加库存操作记录
 //           操作人与时间
             storeLog.setEmpId(requestContext.getUserId());
             storeLog.setOperTime(new Date());
 //            出入库类型
-            storeLog.setType(0);
+            storeLog.setType(orderModel.getOrderType());
 //            仓库id
             storeLog.setStoreId(inventory);
 //            操作明细行id
@@ -217,5 +241,26 @@ public class OrderModelServiceImpl extends BaseServiceImpl<OrderModel> implement
         }
 
         return orderModels;
+    }
+
+    /**
+     *
+     * @param requestContext
+     * @param storeDetail  筛选条件
+     * @param inventoryNum 入库为正数，出库为负数
+     */
+
+    private void operationInv(IRequest requestContext,StoreDetail storeDetail,int inventoryNum){
+        //            选出库存明细记录
+        List<StoreDetail> storeDetails = storeDetailService.selectByCondition(storeDetail);
+//                2.1 商品存在则更新
+        if (storeDetails.size() > 0) {
+            storeDetails.get(0).setNum(storeDetails.get(0).getNum() + inventoryNum);
+            storeDetailService.updateByPrimaryKey(requestContext, storeDetails.get(0));
+        } else {
+//                2.2 不存在则插入
+            storeDetail.setNum(inventoryNum);
+            storeDetailService.insertSelective(requestContext, storeDetail);
+        }
     }
 }

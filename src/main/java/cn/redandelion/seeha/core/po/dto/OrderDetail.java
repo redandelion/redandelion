@@ -42,6 +42,13 @@ public class OrderDetail extends BaseDto {
      */
     @Transient
     private String productName;
+
+    /**
+     * 库存容量
+     */
+    @Transient
+    private Integer inventory;
+
     public Long getOrderDetailId() {
         return orderDetailId;
     }
@@ -108,5 +115,13 @@ public class OrderDetail extends BaseDto {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public Integer getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Integer inventory) {
+        this.inventory = inventory;
     }
 }

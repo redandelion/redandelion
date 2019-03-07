@@ -1,23 +1,57 @@
 
 <#include "../../../include/header.html">
 <body>
+<style>
+    .k-combobox>.k-dropdown-wrap>.k-i-close{
+        top:14px;
+    }
+
+</style>
 <script>
-    var viewModel = Hap.createGridViewModel("#grid")
+    var userName;
+    $.ajax({
+        url:'${request.contextPath}/user/code',
+        type:'GET',
+        async:false,
+        success:function (data) {
+            userName = data;
+        }
+    });
+    $.ajax({
+        url:'${request.contextPath}/inv/code',
+        type:'GET',
+        async:false,
+        success:function (data) {
+            inventoryName = data;
+        }
+    });
+    var viewModel = Hap.createGridViewModel("#grid",{
+        userName:userName,
+        inventoryName:inventoryName
+    })
 </script>
 <div id="dialog"></div>
 <div id="resource-item-dialog"></div>
 <div id="page-content">
     <div class="pull-left" id="toolbar-btn">
-        <span class="btn btn-primary k-grid-add"  data-hotkey="hotkey_create" style="float:left;margin-right:5px;" data-bind="click:create"><i class="fa fa-plus-square" style="margin-right:3px;"></i>新建</span>
-        <span class="btn btn-success k-grid-save-changes" data-hotkey="hotkey_save" data-bind="click:save" style="float:left;margin-right:5px;"><i class="fa fa-save" style="margin-right:3px;"></i>保存</span>
-        <span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:remove" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除</span>
+        <!--<span class="btn btn-primary k-grid-add"  data-hotkey="hotkey_create" style="float:left;margin-right:5px;" data-bind="click:create"><i class="fa fa-plus-square" style="margin-right:3px;"></i>新建</span>-->
+        <!--<span class="btn btn-success k-grid-save-changes" data-hotkey="hotkey_save" data-bind="click:save" style="float:left;margin-right:5px;"><i class="fa fa-save" style="margin-right:3px;"></i>保存</span>-->
+        <!--<span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:remove" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除</span>-->
 
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-        <input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='产品名称' data-bind="value:model.productName" class="k-textbox">
+        <!--<input type="text" style="float:left;width:200px;margin-right:5px;" placeholder='仓库名称' data-bind="value:model.storeId" class="k-textbox">-->
 
-        <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='resource.name' data-bind="value:model.name" class="k-textbox">
+            <select   id="inventoryName" name="inventoryName"
+                     data-role="combobox" data-value-primitive="true"
+                      style="float:left;width:200px;margin-right:5px;"
+                     data-text-field="meaning" data-value-field="value"
+                     data-bind="source:inventoryName,value:model.storeId">
+            </select>
+
+        <script>kendo.bind($('#inventoryName'), viewModel);</script>
+        <!--<input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='操作人' data-bind="value:model.empId" class="k-textbox">-->
         <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:query" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i>查询</span>
         <span class="btn btn-default" style="float:left;" data-bind="click:reset" type="button"><i class="fa fa-eraser" style="margin-right:3px;"></i>重置</span>
         <div style="clear:both"></div>
@@ -53,7 +87,7 @@
         },
         scrollable: true,
         navigatable: false,
-        editable: true,
+        editable: false,
         sortable: true,
         selectable: 'multiple,rowbox',
         pageable: {
@@ -66,7 +100,17 @@
                 field: "storeId",
                 sortable: false,
                 title: '仓库编号',
-                width: 120
+                width: 120,
+                template: function (dataItem) {
+                    var v = dataItem.storeId||'';
+                    $.each(inventoryName, function(i, n) {
+                        if((n.value || '') == (v || '')) {
+                            v = n.meaning;
+                            return v;
+                        }
+                    });
+                    return v;
+                },
 
             },
             {
@@ -80,15 +124,35 @@
                 field: "empId",
                 title: '操作人',
                 width: 240,
-                sortable: {
-                    initialDirection: "asc"
-                }
+                template: function (dataItem) {
+                    var v = dataItem.empId||'';
+                    $.each(userName, function(i, n) {
+                        if((n.value || '') == (v || '')) {
+                            v = n.meaning;
+                            return v;
+                        }
+                    });
+                    return v;
+                },
+//                editor: function (container, options) {
+//                    $('<input name = "'+ options.field
+//                        +'"/>').appendTo(container).kendoDropDownList({
+//                        dataTextField: "meaning",
+//                        dataValueField: "value",
+//                        dataSource: userName,
+//                        change:function(){
+//                            options.model.set('empId',this.value());
+//                        }
+//                    });
+//                }
+
             },
             {
                 field: "operTime",
-                sortable: false,
+                sortable: true,
                 title: '操作时间',
                 width: 120
+
             }, {
                 field: "num",
                 sortable: false,
@@ -97,10 +161,13 @@
 
             },
              {
-                field: "type",
+//                field: seeha.invOperaterType[type],
                 sortable: false,
-                title: '类型',
-                width: 120
+                title: '操作类型',
+                width: 120,
+                template: function (rowdata) {
+                 return seeha.invOperaterType[rowdata.type];
+    }
             }]
     }).data("kendoGrid");
 

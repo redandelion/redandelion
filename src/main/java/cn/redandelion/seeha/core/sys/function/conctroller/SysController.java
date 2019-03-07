@@ -7,7 +7,9 @@ import cn.redandelion.seeha.core.po.service.IOrderModelService;
 import cn.redandelion.seeha.core.supplier.dto.Supplier;
 import cn.redandelion.seeha.core.supplier.service.ISupplierService;
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
+import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -25,7 +27,8 @@ public class SysController {
     private ISupplierService supplierService;
     @Autowired
     private IOrderModelService orderModelService;
-
+    @Autowired
+    private ApplicationContext context;
     @Autowired
     private IStoreService storeService;
     @RequestMapping("/index")
@@ -55,9 +58,10 @@ public class SysController {
         }
          return "supplier/product_edit";
     }
-    @RequestMapping("/po/{orderState}")
-    public String order(ModelMap map,@PathVariable String orderState){
+    @RequestMapping("/po/{orderType}/{orderState}")
+    public String order(ModelMap map,@PathVariable String orderState,@PathVariable String orderType){
         map.put("orderState",orderState);
+        map.put("orderType",orderType);
         return "po/order";
     }
     /**
@@ -72,9 +76,9 @@ public class SysController {
      *  新建采购订单
      */
 
-    @RequestMapping("/po/new")
-    public String orderNew(Model map){
-
+    @RequestMapping("/po/new/{orderType}")
+    public String orderNew(ModelMap map,@PathVariable Integer orderType){
+        map.put("orderState",orderType);
         return "po/order_new";
     }
 /**
@@ -137,7 +141,9 @@ public String OrderEdit(ModelMap map,@PathVariable(required = false) Long orderI
 @RequestMapping("/sys/function/role")
 public String functionRole(ModelMap map){
 //        todo
-    map.put("roleId","10002");
+
+    IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+    map.put("roleId",requestContext.getRoleId());
     return "sys/sys_role_function";
 }
 
