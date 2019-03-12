@@ -7,8 +7,10 @@ import cn.redandelion.seeha.core.po.service.IOrderModelService;
 import cn.redandelion.seeha.core.supplier.dto.Supplier;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
 import cn.redandelion.seeha.core.user.dto.User;
 import cn.redandelion.seeha.core.user.service.IUserService;
+import cn.redandelion.seeha.core.util.CookieUtils;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +39,7 @@ public class OrderModelController extends BaseController {
     public ResponseData queryResource(HttpServletRequest request, OrderModel orderModel,
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         List<OrderModel> models = service.orderQuery(requestContext, orderModel, page, pagesize);
         return new ResponseData(models);
     }
@@ -50,7 +52,7 @@ public class OrderModelController extends BaseController {
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(service.batchUpdate(requestContext, orderModels));
     }
     @PostMapping(value = "/remove")
@@ -79,7 +81,9 @@ public class OrderModelController extends BaseController {
         }
 
         ResponseData responseData = new ResponseData();
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
+        Long userId = Long.parseLong(CookieUtils.getCookieValue(request, "userId"));
+        service.setRoleOfRequest(requestContext,userId);
         Boolean flagNew= service.orderNew(requestContext,suppliers,orderType);
         responseData.setRows(list);
         responseData.setSuccess(flagNew);
@@ -94,7 +98,9 @@ public class OrderModelController extends BaseController {
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
+        Long userId = Long.parseLong(CookieUtils.getCookieValue(request, "userId"));
+        service.setRoleOfRequest(requestContext,userId);
         service.ordercheckChain(requestContext,orderModels);
         return new ResponseData(orderModels);
     }

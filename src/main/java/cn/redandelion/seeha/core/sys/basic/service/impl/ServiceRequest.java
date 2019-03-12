@@ -4,12 +4,16 @@ import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
+@Component
+@Scope("prototype")
 public class ServiceRequest implements IRequest {
     private static final String ATTR_USER_ID = "_userId";
 

@@ -1,15 +1,17 @@
 package cn.redandelion.seeha.core.user.controller;
 
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
+import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import cn.redandelion.seeha.core.user.dto.User;
+import cn.redandelion.seeha.core.user.dto.UserRole;
+import cn.redandelion.seeha.core.user.service.IUserRoleService;
 import cn.redandelion.seeha.core.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,12 +22,16 @@ import java.util.List;
 public class UserController {
     @Autowired
     private IUserService service;
+    @Autowired
+    private IUserRoleService userRoleService;
     @RequestMapping(value = "index")
     public String index2(ModelMap map) {
         map.put("title", "freemarker hello word  ====");
         // 开头不要加上/，linux下面会出错
         return "index";
     }
+
+
     @RequestMapping(value = {"resource","resource/{resourceId}"})
     public String resource(ModelMap map, @PathVariable(required = false) String resourceId) {
         map.put("resourceId", resourceId);
@@ -55,6 +61,23 @@ public class UserController {
             });
         }
         return codeList;
+    }
+
+    public void setRoleOfRequest(IRequest iRequest,Long userId){
+        if (userId!=null) {
+            UserRole userRole = new UserRole();
+            userRole.setUserId(userId);
+            List<UserRole> userRoles = userRoleService.selectByCondition(userRole);
+            if (userRoles.size()>0) {
+                Long[] ids = new Long[userRoles.size()];
+                for (int i = 0; i < userRoles.size(); i++) {
+                    ids[i] = userRoles.get(i).getRoleId();
+                }
+                iRequest.setUserId(userId);
+                iRequest.setRoleId(userRoles.get(0).getRoleId());
+                iRequest.setAllRoleId(ids);
+            }
+        }
     }
 }
 

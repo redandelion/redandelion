@@ -339,14 +339,30 @@
 		url: '${request.contextPath}/sys/rolemenu',
 		contentType: "application/json; charset=utf-8",
 		success: function (data) {
-		var html=['<li class="nav-item start active"><a id="link_home" href="javascript:openTab(\'home\',\'"主页"\', \'home.html\');" class="nav-link"><i class="icon-home"></i><span class="title">主页</span></a></li>'];
+//		var html=['<li class="nav-item start active"><a id="link_home" href="javascript:openTab(\'home\',\'"主页"\', \'home.html\');" class="nav-link"><i class="icon-home"></i><span class="title">主页</span></a></li>'];
+         console.log(data);
+		 if(data && data.success === false && data.code && data.code.indexOf('sys_') != -1){
 
-		datas = [].concat(data.rows);
-		console.log(datas);
+		     kendo.ui.showErrorDialog({
+                 title: '错误信息',
+                 message: '登陆超时，请从新登陆!'
+             }).done(function () {
+                 top.location.href = '${request.contextPath}/login';
+             })
+
+		 }
+		 var html=['<li class="nav-item start active"><a id="link_home" href="javascript:openTab(\'home\',\'home\', \'chats\');" class="nav-link"><i class="icon-home"></i><span class="title">主页</span></a></li>'];
+         datas = [].concat(data.rows);
+
+
 		createMenu(html,datas, true);
 		$("#page-sidebar-menu").append(html.join(''));
 		menuItems = convertToLine(datas);
-		}
+		},
+		complete:function (data) {
+            console.log("--------------222");
+            console.log(data);
+        }
 		});
 	}
 //	创建菜单
@@ -486,6 +502,7 @@
         $.each(mainTab.items(),function(i,v){
             var tabid = $(v).find("span.k-link").attr("data-tabid");
             if( tabid == "home"){
+                html.push('<li><a href="javascript:openTab(\'home\',\'首页\',\'chats\')"><span style="padding-right:20px;" ><i class="icon-home"   style=" margin-right: 10px;" ></i>'+v.textContent+"</span></a></li>");
 //                html.push('<li><a href="javascript:openTab(\'home\',\'首页\',\'home.html\')"><span style="padding-right:20px;" ><i class="icon-home"   style=" margin-right: 10px;" ></i>'+v.textContent+"</span></a></li>");
             }else{
                 var data = findByCode(tabid);
@@ -538,7 +555,7 @@
 
                 if(id!="home"){
 //                    html.push('<li> <a href="javascript:;"  id="page-addshortCut-button" onclick="addShortcut(\'' + id + '\')"><i class="fa fa-plus-square"></i>  </a> </li>');
-//                    html.push('<li><a href="javascript:;" id="page-close-button" onclick="closePage(this)" ><i class="icon-close"></i>  log out</a></li>');
+                    html.push('<li><a href="javascript:;" id="page-close-button" onclick="closePage(this)" ><i class="icon-close"></i>  log out</a></li>');
                 }
                 $("#page-button").html(html.join(''));
                 $("#page-close-button").data("tabid",id);
@@ -560,7 +577,7 @@
 
         }).data("kendoTabStrip");
         $("#mainTab").parent().attr("id", "tabstrip-parent");
-//        openTab('home', '', 'home.html', false);
+        openTab('home', 'home', 'chats', false);
         if(nav=="Y"){
             $("#mainTab .k-tabstrip-items").css("display","inline-block");
             $("#AShortcut").css("display","block");

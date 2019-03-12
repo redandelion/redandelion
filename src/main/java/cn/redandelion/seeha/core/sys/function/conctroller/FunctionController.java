@@ -3,6 +3,7 @@ package cn.redandelion.seeha.core.sys.function.conctroller;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
 import cn.redandelion.seeha.core.sys.function.dto.Function;
 import cn.redandelion.seeha.core.sys.function.dto.FunctionResource;
 import cn.redandelion.seeha.core.sys.function.dto.Resource;
@@ -11,6 +12,7 @@ import cn.redandelion.seeha.core.sys.function.service.IFunctionService;
 import cn.redandelion.seeha.core.sys.function.service.IResourceService;
 import cn.redandelion.seeha.core.user.dto.User;
 import cn.redandelion.seeha.core.user.service.IUserService;
+import cn.redandelion.seeha.core.util.CookieUtils;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,12 +40,14 @@ public class FunctionController extends BaseController{
     private IResourceService resourceService;
     @Autowired
     private IFunctionResourceService functionResourceService;
+
+
     @RequestMapping("query")
     @ResponseBody
     public ResponseData queryResource(HttpServletRequest request, Function function,
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         List<Function> functions = service.select(requestContext, function, page, pagesize);
         functions.stream().forEach(x-> {
 //            设置父功能名称
@@ -71,7 +76,7 @@ public class FunctionController extends BaseController{
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         service.saveFunctionAndResource(requestContext, functions);
         return new ResponseData(functions);
     }
@@ -91,20 +96,25 @@ public class FunctionController extends BaseController{
                                      @RequestParam(defaultValue = DEFAULT_PAGE )int page,
                                      @RequestParam(defaultValue = DEFAULT_PAGE_SIZE )int pagesize,
                                      HttpServletRequest request){
-        IRequest iRequest = (IRequest) context.getBean("iRequestHelper");
+        IRequest iRequest = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(service.select(iRequest,dto,page,pagesize));
     }
     @RequestMapping("rolemenu")
     @ResponseBody
     public ResponseData roleFunctionMenu(HttpServletRequest request){
-        IRequest iRequest = (IRequest) context.getBean("iRequestHelper");
+
+        IRequest iRequest = (IRequest)context.getBean(ServiceRequest.class);
+        Long userId = Long.parseLong(CookieUtils.getCookieValue(request, "userId"));
+        service.setRoleOfRequest(iRequest,userId);
 //      todo
-        Long[] a = new Long[]{10001L, 10002L};
-        iRequest.setRoleId(10001L);
-        iRequest.setUserId(10001L);
-//      更新到全局todo
-        context.getAutowireCapableBeanFactory().applyBeanPropertyValues(iRequest,"iRequestHelper");
-        iRequest.setAllRoleId(a);
+//        Long[] a = new Long[]{10001L, 10002L};
+//        iRequest.setRoleId(10001L);
+//        iRequest.setUserId(10001L);
+////      更新到全局todo
+//        context.getAutowireCapableBeanFactory().applyBeanPropertyValues(iRequest,ServiceRequest.class);
+//        iRequest.setAllRoleId(a);
+//        CookieUtils.getRequestFromCookie(iRequest,request);
+
         return new ResponseData(service.selectRoleFunctions(iRequest));
     }
 

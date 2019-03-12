@@ -4,6 +4,8 @@ import cn.redandelion.seeha.core.annotation.StdWho;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import cn.redandelion.seeha.core.sys.basic.service.IBaseService;
 
+import cn.redandelion.seeha.core.user.dto.UserRole;
+import cn.redandelion.seeha.core.user.service.IUserRoleService;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,7 +18,26 @@ import java.util.List;
 public  class BaseServiceImpl<T> implements IBaseService<T>{
     @Autowired
     protected Mapper<T> mapper;
+    @Autowired
+    private IUserRoleService userRoleService;
 
+    @Override
+    public void setRoleOfRequest(IRequest iRequest, Long userId) {
+        if (userId!=null) {
+            UserRole userRole = new UserRole();
+            userRole.setUserId(userId);
+            List<UserRole> userRoles = userRoleService.selectByCondition(userRole);
+            if (userRoles.size()>0) {
+                Long[] ids = new Long[userRoles.size()];
+                for (int i = 0; i < userRoles.size(); i++) {
+                    ids[i] = userRoles.get(i).getRoleId();
+                }
+                iRequest.setUserId(userId);
+                iRequest.setRoleId(userRoles.get(0).getRoleId());
+                iRequest.setAllRoleId(ids);
+            }
+        }
+    }
 
     @Override
     public List<T> select(IRequest request, T condition, int pageNum, int pageSize) {

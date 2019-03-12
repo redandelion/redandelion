@@ -7,6 +7,7 @@ import cn.redandelion.seeha.core.supplier.service.ISupplierService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
 import cn.redandelion.seeha.core.sys.function.service.IResourceService;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class SupplierController extends BaseController{
     public ResponseData queryResource(HttpServletRequest request, Supplier supplier,
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(supplierService.select(requestContext, supplier, page, pagesize));
     }
 
@@ -56,7 +57,7 @@ public class SupplierController extends BaseController{
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(supplierService.batchUpdate(requestContext, suppliers));
     }
 
@@ -86,7 +87,7 @@ public class SupplierController extends BaseController{
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
 
         return new ResponseData(supplierService.saveInfo(requestContext,suppliers));
     }

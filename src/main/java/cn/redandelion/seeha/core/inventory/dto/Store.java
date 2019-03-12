@@ -2,10 +2,7 @@ package cn.redandelion.seeha.core.inventory.dto;
 
 import cn.redandelion.seeha.core.sys.basic.dto.BaseDto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "STORE")
@@ -28,7 +25,11 @@ public class Store extends BaseDto {
      *  仓库 地址
      */
     private String address;
-
+    /**
+     *  仓库 管理员名称
+     */
+    @Transient
+    private String stockmanName;
     public Long getStoreId() {
         return storeId;
     }
@@ -59,5 +60,13 @@ public class Store extends BaseDto {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getStockmanName() {
+        return stockmanName;
+    }
+
+    public void setStockmanName(String stockmanName) {
+        this.stockmanName = stockmanName;
     }
 }

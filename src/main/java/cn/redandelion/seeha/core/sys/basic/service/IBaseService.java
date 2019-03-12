@@ -8,6 +8,8 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.List;
 
 public interface IBaseService<T> {
+
+     void setRoleOfRequest(IRequest iRequest,Long userId);
     List<T> select(IRequest request, T condition, int pageNum, int pageSize);
 
     T insert(IRequest request,  T record);

@@ -2,6 +2,7 @@ package cn.redandelion.seeha.core.sys.function.conctroller;
 
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
 import cn.redandelion.seeha.core.sys.function.dto.FunctionRole;
 import cn.redandelion.seeha.core.sys.function.dto.MenuItem;
 import cn.redandelion.seeha.core.sys.function.service.IFunctionRoleService;
@@ -29,7 +30,7 @@ public class FunctionRoleController extends BaseController {
     @RequestMapping(value = "/query")
     public ResponseData queryRoleFunction(HttpServletRequest request, @RequestParam(required = false) Long roleId)
             throws Exception {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
 
         List<MenuItem> menus = functionRoleService.getAllMenus();
         if (roleId != null) {
@@ -43,7 +44,7 @@ public class FunctionRoleController extends BaseController {
     @PostMapping(value = "/submit")
     public ResponseData submitRoleFunction(HttpServletRequest request, @RequestBody List<FunctionRole> functionRoles)
             throws Exception {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
 //      增加角色功能映射
         functionRoleService.buildFunctionAndRole(requestContext,functionRoles);
         return new ResponseData(functionRoles);

@@ -4,6 +4,7 @@ package cn.redandelion.seeha.core.sys.basic.dto;
  * #{copyright}#
  */
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;

@@ -8,15 +8,24 @@ import cn.redandelion.seeha.core.supplier.dto.Supplier;
 import cn.redandelion.seeha.core.supplier.service.ISupplierService;
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
+import cn.redandelion.seeha.core.user.dto.User;
+import cn.redandelion.seeha.core.user.dto.UserRole;
+import cn.redandelion.seeha.core.user.service.IUserRoleService;
+import cn.redandelion.seeha.core.user.service.IUserService;
+import cn.redandelion.seeha.core.util.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +40,51 @@ public class SysController {
     private ApplicationContext context;
     @Autowired
     private IStoreService storeService;
+    @Autowired
+    private IUserService userService;
+    @Autowired
+    private IUserRoleService userRoleService;
+
     @RequestMapping("/index")
     public String index(){
         return "index";
+    }
+    @RequestMapping("/login")
+    public String login(){
+        return "login";
+    }
+    @PostMapping(value = "loginIndex")
+    @ResponseBody
+    public String login(HttpServletResponse response, HttpServletRequest request,
+                        @RequestParam String username, @RequestParam String password) {
+        User user = new User();
+        user.setUserName(username);
+        user.setUserPassword(password);
+        List<User> users = userService.selectByCondition(user);
+        if (users.size()>0) {
+            user = users.get(0);
+            UserRole userRole = new UserRole();
+            userRole.setUserId(user.getUserId());
+            List<UserRole> userRoles = userRoleService.selectByCondition(userRole);
+            if (userRoles.size()>0) {
+                Long[] ids = new Long[userRoles.size()];
+                for (int i = 0; i < userRoles.size(); i++) {
+                    ids[i] = userRoles.get(i).getRoleId();
+                }
+                IRequest iRequest = (IRequest) context.getBean(ServiceRequest.class);
+                iRequest.setUserId(user.getUserId());
+                iRequest.setRoleId(userRoles.get(0).getRoleId());
+                iRequest.setAllRoleId(ids);
+                CookieUtils.setRequestFromCookie(iRequest,response);
+//                context.getAutowireCapableBeanFactory().createBean(ServiceRequest.class);
+            }else {
+                return "error1";
+            }
+        }else {
+            return "error";
+        }
+        // 开头不要加上/，linux下面会出错
+        return "success";
     }
     @RequestMapping("/supplier")
     public String supplier(){
@@ -113,6 +164,10 @@ public String OrderEdit(ModelMap map,@PathVariable(required = false) Long orderI
         Store store = new Store();
         store.setStoreId(storeId);
         store = storeService.selectByPrimaryKey(null,store);
+        User user = new User();
+        user.setUserId(store.getStockman());
+        user = userService.selectByPrimaryKey(null, user);
+        store.setStockmanName(user.getUserName());
         map.put("store",store);
         return "inv/store_edit";
     }
@@ -142,9 +197,14 @@ public String OrderEdit(ModelMap map,@PathVariable(required = false) Long orderI
 public String functionRole(ModelMap map){
 //        todo
 
-    IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+    IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
     map.put("roleId",requestContext.getRoleId());
     return "sys/sys_role_function";
 }
+    @RequestMapping("/chats")
+    public String chatsOfInv(ModelMap map){
+//        todo
 
+        return "test";
+    }
 }

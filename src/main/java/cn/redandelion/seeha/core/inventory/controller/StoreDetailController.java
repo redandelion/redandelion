@@ -6,6 +6,8 @@ import cn.redandelion.seeha.core.inventory.service.IStoreDetailService;
 import cn.redandelion.seeha.core.inventory.service.IStoreService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
+import cn.redandelion.seeha.core.util.CookieUtils;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -29,7 +31,7 @@ public class StoreDetailController extends BaseController {
     public ResponseData queryResource(HttpServletRequest request, StoreDetail storeDetail,
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(service.select(requestContext, storeDetail, page, pagesize));
     }
     @PostMapping(value = "/submit")
@@ -41,7 +43,9 @@ public class StoreDetailController extends BaseController {
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
+        Long userId = Long.parseLong(CookieUtils.getCookieValue(request, "userId"));
+        service.setRoleOfRequest(requestContext,userId);
         return new ResponseData(service.batchUpdate(requestContext, storeDetails));
     }
     @PostMapping(value = "/remove")

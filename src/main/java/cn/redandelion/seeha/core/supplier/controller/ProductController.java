@@ -3,7 +3,9 @@ package cn.redandelion.seeha.core.supplier.controller;
 import cn.redandelion.seeha.core.supplier.dto.Product;
 import cn.redandelion.seeha.core.supplier.service.IProductService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
+import cn.redandelion.seeha.core.sys.basic.dto.Code;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -12,6 +14,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -27,7 +32,7 @@ public class ProductController extends BaseController{
     public ResponseData queryProduct(HttpServletRequest request, Product product,
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(productService.select(requestContext,product, page, pagesize));
     }
 
@@ -40,7 +45,7 @@ public class ProductController extends BaseController{
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(productService.batchUpdate(requestContext, products));
     }
 
@@ -49,6 +54,21 @@ public class ProductController extends BaseController{
             throws Exception {
         productService.batchDelete(products);
         return new ResponseData();
+    }
+    @RequestMapping(value = "/code")
+    @ResponseBody
+    public List<Code> supplierCode(HttpServletResponse response ) throws IOException {
+        List<Code> codeList = new ArrayList<>();
+        List<Product>  suppliers = productService.selectAll();
+        if (suppliers.size()>0){
+            suppliers.forEach(x->{
+                Code code = new Code();
+                code.setValue(x.getProductId());
+                code.setMeaning(x.getProductName());
+                codeList.add(code);
+            });
+        }
+        return codeList;
     }
 
 }

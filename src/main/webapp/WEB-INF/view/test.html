@@ -1,18 +1,184 @@
-<#include "../../include/header.html" />
+<!DOCTYPE html>
+<html>
+<head>
+    <head>
+        <meta charset="utf-8" />
 
-<script type="application/javascript">
-    function test() {
-        $.ajax({
-            url:"${request.contextPath}/sys/query/",
-            success:function (data) {
-                console.log(data)
-            }
+        <title></title>
+        <script src="${request.contextPath}/js/jquery-1.12.3.js"></script>
+
+        <script src="${request.contextPath}/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+
+        <script src="${request.contextPath}/js/kendo.all.js"></script>
+        <script src="${request.contextPath}/css/layout/js/jquery.slimscroll.min.js" type="text/javascript"></script>
+        <script src="${request.contextPath}/css/layout/js/app.js" type="text/javascript"></script>
+        <script src="${request.contextPath}/css/layout/js/bootbox.min.js" type="text/javascript"></script>
+        <script src="${request.contextPath}/css/layout/js/layout.min.js" type="text/javascript"></script>
+        <script src="${request.contextPath}/js/kendo.dataviz.js" type="text/javascript"></script>
+
+        <link rel="stylesheet" href="${request.contextPath}/css/kendo.common.min.css" />
+
+    </head>
+<body>
+<div id="example">
+    <div class="demo-section k-content wide">
+        <div id="chart" style="float: left"></div>
+        <div id="chart1" style="float: left"></div>
+        <div id="chart2" style="float: left"></div>
+    </div>
+    <script>
+        function createChart() {
+            $("#chart").kendoChart({
+                title: {
+                    text: "营业图谱"
+                },
+                legend: {
+                    visible: true,
+                    position: "bottom"
+                },
+                seriesDefaults: {
+                    type: "line"
+                },
+                series: [{
+                    name: "销售总额",
+                    data: [5600, 6300, 7400, 9100, 11700, 13800]
+                }, {
+                    name: "成本总额",
+                    data: [5200, 3400, 2300, 4800, 6700, 8300]
+                }],
+                valueAxis: {
+                    max: 15000,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: true
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                categoryAxis: {
+                    categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                seriesColors:[
+                    "#3f51b5",
+                         "#03a9f4",
+             "#4caf50",
+             "#f9ce1d",
+             "#ff9800",
+             "#ff5722"
+                ],
+                tooltip: {
+                    visible: true,
+                    template: "#= series.name #: #= value #"
+                }
+            });
+        }
+
+        $(document).ready(createChart);
+        $(document).bind("kendo:skinChange", createChart);
+
+        function createChart1() {
+            $("#chart1").kendoChart({
+                title: {
+                    text: "利润图谱"
+                },
+                legend: {
+                    visible: true,
+                    position: "bottom"
+                },
+                seriesDefaults: {
+                    type: "area"
+                },
+                series: [{
+                    name: "销售总额",
+                    data: [5600, 6300, 7400, 9100, 11700, 13800]
+                }, {
+                    name: "成本总额",
+                    data: [5200, 3400, 2300, 4800, 6700, 8300]
+                }],
+                valueAxis: {
+                    max: 15000,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: true
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                categoryAxis: {
+                    categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                seriesColors:[
+                    "#3f51b5",
+                    "#03a9f4",
+                    "#4caf50",
+                    "#f9ce1d",
+                    "#ff9800",
+                    "#ff5722"
+                ],
+                tooltip: {
+                    visible: true,
+                    template: "#= series.name #: #= value #"
+                }
+            });
+        }
+
+        $(document).ready(createChart1);
+        $(document).bind("kendo:skinChange", createChart1);
+//        库存预警
+        function createChart2() {
+            $("#chart2").kendoChart({
+                title: {
+                    text: "库存预警"
+                },
+                legend: {
+                    visible: false
+                },
+                series: [{
+                    type: "waterfall",
+                    data: [180, -60, -20, 10, 30],
+                    labels: {
+                        visible: true
+                    }
+                }],
+                categoryAxis: {
+                    categories: ["In stock", "Damaged", "Reserved", "In transit", "Refurbished"],
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                axisDefaults: {
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                seriesColors:[
+                    "#03a9f4",
+                    "#3f51b5",
+                    "#4caf50",
+                    "#f9ce1d",
+                    "#ff9800",
+                    "#ff5722"
+                ],
+            });
+        }
+
+        $(document).ready(createChart2);
+        $(document).bind("kendo:skinChange", createChart2);
+    </script>
+</div>
 
 
-        })
-    }
-    test();
-
-</script>
 </body>
 </html>

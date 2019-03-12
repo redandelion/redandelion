@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Date;
 
@@ -18,11 +19,12 @@ public class DynamicConfigurationBaseDto {
 
     @Autowired
     private ApplicationContext applicationContext;
-    @Bean
+    @Bean()
+    @Scope("prototype")
     public Runnable  ConfigurationBaseDto() throws  Exception{
         ConfigurableApplicationContext context = (ConfigurableApplicationContext)applicationContext;
         DefaultListableBeanFactory listableBeanFactory = (DefaultListableBeanFactory) context.getBeanFactory();
-        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.rootBeanDefinition(ServiceRequest.class);
+        BeanDefinitionBuilder beanDefinitionBuilder =  BeanDefinitionBuilder.rootBeanDefinition(ServiceRequest.class);
         /*
         * 设置属性
         *
@@ -31,8 +33,11 @@ public class DynamicConfigurationBaseDto {
         beanDefinitionBuilder.addPropertyValue("locale","ZH_CN");
 //        beanDefinitionBuilder.addPropertyValue("roleId",10002L);
 
-        listableBeanFactory.registerBeanDefinition("iRequestHelper",beanDefinitionBuilder.getBeanDefinition());
+        listableBeanFactory.registerBeanDefinition(String.valueOf(ServiceRequest.class),beanDefinitionBuilder.getBeanDefinition());
+
+
         return null;
+
     }
 
 

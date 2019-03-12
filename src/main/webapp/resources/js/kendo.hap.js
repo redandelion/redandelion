@@ -579,7 +579,8 @@
             }
         }).ajaxError(function (event, xhr, ajaxOptions, thrownError) {
             // if(xhr.responseJSON)
-            //     Hap.resolveError(xhr.responseJSON)
+
+                 Hap.resolveError(xhr.responseJSON)
         });
 
 
@@ -589,7 +590,13 @@
                     if (top.sessionExpiredLogin) {
                         top.sessionExpiredLogin();
                     } else {
-                        top.location.href = _basePath + '/login';
+                        kendo.ui.showErrorDialog({
+                            title: '错误信息',
+                            message: '登陆超时，请从新登陆!'
+                        }).done(function () {
+                            top.location.href = _basePath + '/login';
+                        })
+
                     }
                     break;
                 case 'sys_access_denied':

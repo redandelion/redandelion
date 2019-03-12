@@ -5,6 +5,7 @@ import cn.redandelion.seeha.core.po.service.IOrderDetailService;
 import cn.redandelion.seeha.core.po.service.IOrderModelService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
 import cn.redandelion.seeha.core.util.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +27,7 @@ public class OrderDetailController extends BaseController {
     public ResponseData queryResource(HttpServletRequest request, OrderDetail orderDetail,
                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(service.selectQuery(requestContext, orderDetail, page, pagesize));
     }
     @PostMapping(value = "/submit")
@@ -38,7 +39,7 @@ public class OrderDetailController extends BaseController {
             responseData.setMessage("保存失败！");
             return responseData;
         }
-        IRequest requestContext = (IRequest) context.getBean("iRequestHelper");
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
         return new ResponseData(service.batchUpdate(requestContext, orderDetails));
     }
     @PostMapping(value = "/remove")

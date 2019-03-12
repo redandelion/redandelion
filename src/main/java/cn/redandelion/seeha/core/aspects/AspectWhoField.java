@@ -5,12 +5,12 @@ import cn.redandelion.seeha.core.annotation.StdWho;
 import cn.redandelion.seeha.core.sys.basic.dto.BaseDto;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
 import cn.redandelion.seeha.core.sys.basic.service.impl.ServiceRequest;
+import cn.redandelion.seeha.core.util.CookieUtils;
 import cn.redandelion.seeha.core.util.DtoUtils;
+import cn.redandelion.seeha.core.util.ResponseData;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -32,6 +33,39 @@ public class AspectWhoField {
     private ApplicationContext context;
     @Pointcut("execution(* cn.redandelion.seeha..service..*(..))")
     public void annotationPoinCut(){}
+    @Pointcut("execution(* cn.redandelion.seeha..*(..))")
+    public void cookiePoinCut(){}
+    @Around("cookiePoinCut()")
+    public Object beforeOperation(ProceedingJoinPoint joinPoint) throws Throwable {
+//   cookie 生命周期检查 ， 超时则从新登陆
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        Method method = signature.getMethod();
+        // 1.获取参数的类型
+        Boolean flag = true;
+        method.setAccessible(true);
+        Class<?>[] types = method.getParameterTypes();
+        for (int i=0; i< types.length ; ++i){
+
+
+            Object[] args = joinPoint.getArgs();
+            if( args[i]  instanceof HttpServletRequest){
+//          如果存在 HttpServletRequest 参数类型
+                HttpServletRequest request = (HttpServletRequest) args[i];
+                if (CookieUtils.getCookieValue(request, "userId")==null){
+                    logger.error("Cookie 不存在");
+                    ResponseData responseData = new ResponseData(false);
+                    responseData.setCode("sys_session_timeout");
+                    responseData.setMessage("登陆超时！");
+                    return responseData;
+                }else {
+
+                    logger.error("Cookie 存在");
+                }
+            }
+        }
+        return joinPoint.proceed();
+    }
+
 
     @Before("annotationPoinCut()")
     public void before(JoinPoint joinPoint)  {
