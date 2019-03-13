@@ -1,7 +1,9 @@
 package cn.redandelion.seeha.core.inventory.controller;
 
+import cn.redandelion.seeha.core.inventory.dto.ChatsOfStore;
 import cn.redandelion.seeha.core.inventory.dto.Store;
 import cn.redandelion.seeha.core.inventory.dto.StoreDetail;
+import cn.redandelion.seeha.core.inventory.dto.StoreLog;
 import cn.redandelion.seeha.core.inventory.service.IStoreDetailService;
 import cn.redandelion.seeha.core.inventory.service.IStoreService;
 import cn.redandelion.seeha.core.sys.basic.controller.BaseController;
@@ -53,5 +55,12 @@ public class StoreDetailController extends BaseController {
             throws Exception {
         service.batchDelete(storeDetails);
         return new ResponseData();
+    }
+
+    @RequestMapping(value = "/chats")
+    public List<ChatsOfStore> getChatsOfInventory(HttpServletRequest request)
+            throws Exception {
+        IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
+        return service.getChats(requestContext, 100L);
     }
 }

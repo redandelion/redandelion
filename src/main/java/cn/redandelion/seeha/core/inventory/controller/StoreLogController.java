@@ -51,4 +51,6 @@ public class StoreLogController extends BaseController {
         service.batchDelete(storeLogs);
         return new ResponseData();
     }
+
+
 }

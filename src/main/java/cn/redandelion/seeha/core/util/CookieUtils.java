@@ -12,7 +12,7 @@ import java.lang.reflect.Array;
 
 public class CookieUtils {
     public static final int COOKIE_MAX_AGE = 7 * 24 * 3600;
-    public static final int COOKIE_HALF_HOUR = 30;
+    public static final int COOKIE_HALF_HOUR = 30*60;
     /**
      * 根据Cookie名称得到Cookie对象，不存在该对象则返回Null
      *
@@ -22,7 +22,7 @@ public class CookieUtils {
      */
     public static Cookie getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
-        if (cookies.length==0) {
+        if (cookies==null||cookies.length==0) {
             return null;
         }
         Cookie cookie = null;

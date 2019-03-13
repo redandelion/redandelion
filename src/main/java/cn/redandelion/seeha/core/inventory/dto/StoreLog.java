@@ -94,4 +94,9 @@ public class StoreLog extends BaseDto {
     public void setType(Integer type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return storeId.toString()+ type.toString();
+    }
 }

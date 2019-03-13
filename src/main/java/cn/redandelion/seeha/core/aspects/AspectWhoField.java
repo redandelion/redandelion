@@ -33,7 +33,11 @@ public class AspectWhoField {
     private ApplicationContext context;
     @Pointcut("execution(* cn.redandelion.seeha..service..*(..))")
     public void annotationPoinCut(){}
-    @Pointcut("execution(* cn.redandelion.seeha..*(..))")
+
+    /**
+     * 监听所有controller 方法，但排除登录页面
+     */
+    @Pointcut("execution(* cn.redandelion.seeha..*(..))  && !execution(* cn.redandelion.seeha.core.sys.function.conctroller.SysController.loginIndex(..))")
     public void cookiePoinCut(){}
     @Around("cookiePoinCut()")
     public Object beforeOperation(ProceedingJoinPoint joinPoint) throws Throwable {

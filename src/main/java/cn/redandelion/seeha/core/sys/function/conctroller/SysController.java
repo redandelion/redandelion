@@ -55,7 +55,7 @@ public class SysController {
     }
     @PostMapping(value = "loginIndex")
     @ResponseBody
-    public String login(HttpServletResponse response, HttpServletRequest request,
+    public String loginIndex(HttpServletResponse response, HttpServletRequest request,
                         @RequestParam String username, @RequestParam String password) {
         User user = new User();
         user.setUserName(username);
@@ -194,10 +194,12 @@ public String OrderEdit(ModelMap map,@PathVariable(required = false) Long orderI
     }
 //  功能分配
 @RequestMapping("/sys/function/role")
-public String functionRole(ModelMap map){
+public String functionRole(ModelMap map,HttpServletRequest request){
 //        todo
 
     IRequest requestContext = (IRequest) context.getBean(ServiceRequest.class);
+    Long userId = Long.parseLong(CookieUtils.getCookieValue(request, "userId"));
+    userRoleService.setRoleOfRequest(requestContext,userId);
     map.put("roleId",requestContext.getRoleId());
     return "sys/sys_role_function";
 }

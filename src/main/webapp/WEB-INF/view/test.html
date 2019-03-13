@@ -139,6 +139,15 @@
 //        库存预警
         function createChart2() {
             $("#chart2").kendoChart({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "${request.contextPath}/inv/detail/chats",
+                            dataType: "json"
+                        }
+                    }
+                },
+
                 title: {
                     text: "库存预警"
                 },
@@ -147,13 +156,27 @@
                 },
                 series: [{
                     type: "waterfall",
-                    data: [180, -60, -20, 10, 30],
+                    field: "total",
+//                        summaryField: "summary",
+                    categoryField: "inventoryName",
+//                    data: [180, -60, -20, 10, 30],
                     labels: {
-                        visible: true
+                        visible: true,
+                        position: "outsideEnd",
+//                        format: "C"
+                    },
+                    color: function(point) {
+                        var name = point.category;
+                        console.log(point.category);
+                        if (point.value < 110 && name == "In Stock" ) {
+                            return "#f54fd3";
+                        }
                     }
+
+
                 }],
                 categoryAxis: {
-                    categories: ["In stock", "Damaged", "Reserved", "In transit", "Refurbished"],
+//                    categories: ["In stock", "Damaged", "Reserved", "In transit", "Refurbished"],
                     labels: {
                         rotation: "auto"
                     }

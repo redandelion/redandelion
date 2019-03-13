@@ -1,19 +1,19 @@
 <#include "../include/header.html">
 <body>
 <script type="text/javascript">
-    var userName;
+    var roleName;
     $.ajax({
-        url:'${request.contextPath}/user/code',
+        url:'${request.contextPath}/user/roleId/code',
         type:'GET',
         async:false,
         success:function (data) {
-            userName = data;
+            roleName = data;
         }
     });
     var viewModel = kendo.observable({
-        userName:userName,
+        userName:roleName,
         model: {
-            roleId: ${roleId?c}
+            roleId: <#if roleId ==-1 > ''  <#else>${roleId?c}   </#if>
         },
         query: function (e) {
             $('#grid').data('kendoTreeList').dataSource.read();
@@ -33,11 +33,11 @@
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
         <div style="float:left;margin-right:5px;">
-            <select  id="userName" name="userName" required validationMessage="采购员为必选"
+            <select  id="userName" name="userName" data-placeholder="管理员"
                      data-role="combobox" data-value-primitive="true"
                      style="width: 100%;border:1px;"
                      data-text-field="meaning" data-value-field="value"
-                     data-bind="enabled: model.isEnabledLook,source:userName,value:model.roleId">
+                     data-bind="source:userName,value:model.roleId,text:model.roleName">
             </select>
             <script>kendo.bind($('#userName'), viewModel);</script>
 

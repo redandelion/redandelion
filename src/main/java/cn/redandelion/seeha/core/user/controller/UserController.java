@@ -2,8 +2,10 @@ package cn.redandelion.seeha.core.user.controller;
 
 import cn.redandelion.seeha.core.sys.basic.dto.Code;
 import cn.redandelion.seeha.core.sys.basic.dto.IRequest;
+import cn.redandelion.seeha.core.user.dto.Role;
 import cn.redandelion.seeha.core.user.dto.User;
 import cn.redandelion.seeha.core.user.dto.UserRole;
+import cn.redandelion.seeha.core.user.service.IRoleService;
 import cn.redandelion.seeha.core.user.service.IUserRoleService;
 import cn.redandelion.seeha.core.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     private IUserService service;
+    @Autowired
+    private IRoleService roleService;
     @Autowired
     private IUserRoleService userRoleService;
     @RequestMapping(value = "index")
@@ -62,7 +66,21 @@ public class UserController {
         }
         return codeList;
     }
-
+    @RequestMapping(value = "/roleId/code")
+    @ResponseBody
+    public List<Code> roleCode(HttpServletResponse response ) throws IOException {
+        List<Code> codeList = new ArrayList<>();
+        List<Role>  roles = roleService.selectAll();
+        if (roles.size()>0){
+            roles.forEach(x->{
+                Code code = new Code();
+                code.setValue(x.getRoleId());
+                code.setMeaning(x.getRoleName());
+                codeList.add(code);
+            });
+        }
+        return codeList;
+    }
     public void setRoleOfRequest(IRequest iRequest,Long userId){
         if (userId!=null) {
             UserRole userRole = new UserRole();
