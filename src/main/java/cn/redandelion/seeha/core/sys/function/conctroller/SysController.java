@@ -192,6 +192,15 @@ public String OrderEdit(ModelMap map,@PathVariable(required = false) Long orderI
 
         return "sys/sys_function";
     }
+//    功能维护
+    @RequestMapping(value = {"user/resource/edit","user/resource/edit/{functionId}","user/resource/edit/{functionId}/{resourceId}"})
+    public String resourceEdit(ModelMap map, @PathVariable(required = false) String resourceId,
+                               @PathVariable(required = false) String functionId) {
+
+        map.put("resourceId", resourceId);
+        map.put("functionId", functionId);
+        return "sys/sys_resource_edit";
+    }
 //  功能分配
 @RequestMapping("/sys/function/role")
 public String functionRole(ModelMap map,HttpServletRequest request){
@@ -209,4 +218,41 @@ public String functionRole(ModelMap map,HttpServletRequest request){
 
         return "test";
     }
+
+//    user
+    @RequestMapping("/userInfo")
+    public String userInfo(ModelMap map){
+    //        todo
+
+        return "user/user";
+    }
+    //    role
+    @RequestMapping("/roleInfo")
+    public String roleInfo(ModelMap map){
+        //        todo
+
+        return "user/role";
+    }
+    //    role
+    @RequestMapping("/roleUserInfo/{userId}")
+    public String roleUserInfo(ModelMap map,@PathVariable(required = false) String userId
+                               ){
+        //        todo
+        map.put("userId",userId);
+        return "user/user_role";
+    }
+    //    roleadd
+    @RequestMapping("/role/user/addrole/{userId}")
+    public String roleUserInfoAdd(ModelMap map,@PathVariable(required = false) String userId){
+        //        todo
+        map.put("userId",userId);
+        return "user/user_role_add";
+    }
+    @RequestMapping(value = "resources")
+    public String resources(ModelMap map) {
+
+        // 开头不要加上/，linux下面会出错
+        return "sys/sys_resource";
+    }
+
 }

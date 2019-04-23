@@ -126,7 +126,7 @@ public  class BaseServiceImpl<T> implements IBaseService<T>{
             if (t!=null){
                 mapper.updateByPrimaryKeySelective(x);
             }else {
-                mapper.insert(x);
+                mapper.insertSelective(x);
             }
         });
         return list;

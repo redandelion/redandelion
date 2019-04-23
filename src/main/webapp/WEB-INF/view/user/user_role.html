@@ -1,0 +1,194 @@
+
+<#include "../../../include/header.html">
+<body>
+<script>
+    var viewModel = Hap.createGridViewModel("#grid",{
+        model:{
+        <#if userId?? >userId:${userId}</#if>
+        },
+    removeRole:function () {
+        var role = [];
+        var selection = $('#grid').data('kendoGrid').selectedDataItems();
+        console.log(selection.length);
+        if (selection.length > 0) {
+            var userId = ${userId};
+//            console.log(userId)
+//            console.log(selection)
+            if (userId) {
+                for (var i = 0; i < selection.length; i++) {
+                    if (selection[i].roleId) {
+                        role.push({
+                            userId: userId,
+                            roleId: selection[i].roleId,
+                        })
+                    }
+                }
+            } else {
+                kendo.ui.showErrorDialog({
+                    title: $l('错误提示'),
+                    message: "获取用户失败，请重新登陆！"
+                });
+
+            }
+            $.ajax({
+                url:'${request.contextPath}/role/user/remove',
+                contentType:'application/json',
+                data:kendo.stringify(role),
+                type:'POST',
+                success:function(data){
+                    if(data.success == false){
+                        kendo.ui.showErrorDialog({
+                            title: $l('错误提示'),
+                            message: "删除角色失败！"
+                        })
+                    }else {
+                        kendo.ui.showErrorDialog({
+                            title: $l('系统提示'),
+                            message: "操作成功！"
+                        })
+                        $('#grid').data('kendoGrid').dataSource.page(1);
+                    }
+                }
+
+            })
+
+        } else {
+            kendo.ui.showErrorDialog({
+                title: $l('错误提示'),
+                message: "请选择角色！"
+            });
+        }
+    }
+    })
+</script>
+<div id="dialog"></div>
+<div id="resource-item-dialog"></div>
+<div id="page-content">
+    <div class="pull-left" id="toolbar-btn">
+        <span id="add" class="btn btn-primary k-grid-add"  data-hotkey="hotkey_create" style="float:left;margin-right:5px;" ><i class="fa fa-plus-square" style="margin-right:3px;"></i>添加角色</span>
+        <span class="btn btn-danger" data-hotkey="hotkey_delete"  data-bind="click:removeRole" style="float:left;margin-right:5px;"><i class="fa fa-trash-o" style="margin-right:3px;"></i>删除角色</span>
+
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+
+
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div id="roleWin"></div>
+    <div style="clear:both">
+        <div id="grid"></div>
+    </div>
+</div>
+
+<script>
+
+    Hap.initEnterQuery('#query-form', viewModel.query);
+    console.log();
+    var dataSource = Hap.createGridDataSource({
+        url:"${request.contextPath}/role/user/",
+        model: {
+            id: "roleId",
+            fields: {
+                roleCode: {validation: {required: true}},
+                roleName: {validation: {required: true}},
+            }
+        }
+    });
+
+    var grid = $("#grid").kendoGrid({
+        dataSource: dataSource,
+        dataBound: function () {
+            if (parent.autoResizeIframe) {
+                parent.autoResizeIframe('${RequestParameters.functionCode!}')
+            }
+        },
+        scrollable: true,
+        navigatable: false,
+        editable: false,
+        sortable: true,
+        selectable: 'multiple,rowbox',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+            {
+                field: "roleCode",
+                title: '角色编码',
+                width: 240
+
+            },
+            {
+                field: "roleName",
+                title: '角色名称',
+                width: 100,
+                sortable: false
+
+            },
+            {
+                field: "roleDescription",
+                title: '角色描述',
+                sortable: false,
+
+                width: 120
+
+            },
+            {
+                field: "startActiveDate",
+                sortable: false,
+                title: '有效开始时间',
+                width: 120,
+                format: "{0:yyyy-MM-dd}",
+                editor: function (container, options) {
+                    var end = options.model.endActiveDate;
+                    var opts = {
+                        format: "yyyy-MM-dd"
+                    };
+                    if (end) {
+                        opts.max = end;
+                    }
+                    $('<input name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDatePicker(opts);
+                }
+
+            },
+            {
+                field: "endActiveDate",
+                sortable: false,
+                title: '有效结束时间',
+                width: 120,
+                format: "{0:yyyy-MM-dd}",
+                editor: function (container, options) {
+                    var start = options.model.startActiveDate;
+                    var opts = {
+                        format: "yyyy-MM-dd"
+                    };
+                    if (start) {
+                        opts.min = start;
+                    }
+                    $('<input name="' + options.field + '"/>').appendTo(container).kendoDatePicker(opts);
+                }
+
+            },
+        ]
+    }).data("kendoGrid");
+//  添加窗口
+    $("#add").click(function () {
+        var win =  window.parent.$("#dialog").kendoWindow({
+            width: 600,
+            height: 400,
+            modal: true,
+            iframe:true,
+            visible: false,
+            content:'role/user/addrole/${userId}',
+            close:function(e){
+                window.parent.$("#roleWin").data("kendoWindow").open();
+            }
+        }).data("kendoWindow");
+        win.center().open();
+    });
+
+</script>
+</body>
+</html>

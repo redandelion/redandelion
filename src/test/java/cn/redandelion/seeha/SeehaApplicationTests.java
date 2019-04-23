@@ -18,9 +18,11 @@ import cn.redandelion.seeha.core.user.dto.User;
 import cn.redandelion.seeha.core.user.mapper.UserMapper;
 import cn.redandelion.seeha.core.user.service.IUserService;
 
+import org.apache.ibatis.reflection.ArrayUtil;
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
@@ -33,6 +35,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StringUtils;
+import org.yaml.snakeyaml.util.ArrayUtils;
+import tk.mybatis.mapper.entity.Example;
 
 
 import java.beans.IntrospectionException;
@@ -44,6 +49,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -72,11 +78,13 @@ public class SeehaApplicationTests {
 	private IFunctionRoleService functionRoleService;
 	@Autowired
 	private IResourceService resourceService;
+//	@Autowired
+//	private FunctionMapper functionMapper;
 	Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Test
 	public void menu(){
-		ServiceRequest request = (ServiceRequest) applicationContext.getBean("iRequestHelper");
+		ServiceRequest request = (ServiceRequest) applicationContext.getBean(ServiceRequest.class);
 		Long[] a = new Long[]{10001L, 10002L};
 		request.setAllRoleId(a);
 		List<MenuItem> list= functionService.selectRoleFunctions(request);
@@ -92,7 +100,7 @@ public class SeehaApplicationTests {
 //		user.setDept((long) 342);
 //		int num = userMapper.insertSelective(user);
 //		log.info("[-----------查询一个人]"+user);
-
+//           JOURNAL_LINE_DETAIL_REPORT
 //		Resource resource = new Resource();
 //		resource.setUrl("sdas");
 //		resource.setName("工作流");
@@ -143,7 +151,7 @@ public class SeehaApplicationTests {
 
 	@Test
 	public void selectAllFunctionSerivce(){
-		ServiceRequest request = (ServiceRequest) applicationContext.getBean("iRequestHelper");
+		ServiceRequest request = (ServiceRequest) applicationContext.getBean(ServiceRequest.class);
 		Function f = new Function();
 		f.setFunctionId(32L);
 		f.setModuleCode("223531");
@@ -456,13 +464,50 @@ public class SeehaApplicationTests {
 //		}
 //
 //		return respuesta;
+
+
+
+//	    PERIODSYNC
 //	}
+	@Test
 	public void excelPoi(){
-		HSSFWorkbook wb = new HSSFWorkbook();
+		int random = (int) (Math.random()*9+1);
+		String valueOf = String.valueOf(random);
+		//生成uuid的hashCode值
+		int hashCode = UUID.randomUUID().toString().hashCode();
+		//可能为负数
+		if(hashCode<0){
+			hashCode = -hashCode;
+		}
+		String value = valueOf + String.format("%015d", hashCode);
+		System.out.println(value);
 
-		HSSFSheet sheet  = wb.createSheet("sheel1");
+		}
+	@Test
+	public void testnull(){
+		String[] a = new String[2];
+		a[0] = "2";
+		a[1] = "4";
+		String s = "[2,4]";
 
-		HSSFPrintSetup print = (HSSFPrintSetup) sheet.getPrintSetup();
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa",Locale.ENGLISH);
+		String time = sdf.format(new Date());
+		System.out.println(time);
+
+//			Calendar ca = Calendar.getInstance();
+//			ca.setTime(date);
+//			ca.add(Calendar.DATE,-2);
+//			Date resultDate= ca.getTime();
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			String dates =  sdf.format(resultDate);
+
+//		Function function = new Function();
+//		function.setParentFunctionId(null);
+//		Example example = new Example(Function.class);
+//		Example.Criteria criteria = example.createCriteria();
+//		criteria.andIsNull("resourceId");
+//		List<Function> functions = functionMapper.selectByExample(example);
+//		List<Function> functions = functionService.selectByCondition(function);
 
 	}
 

@@ -2,6 +2,8 @@ package cn.redandelion.seeha.core.user.dto;
 
 
 import cn.redandelion.seeha.core.sys.basic.dto.BaseDto;
+import lombok.Builder;
+import lombok.Value;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +27,7 @@ public class User extends BaseDto {
 //    密码
     @NotEmpty(message = "密码不能为空")
     @Length(min = 6,max = 16,message = "密码长度6-16位！")
+
     private String userPassword;
 
     @Length(max = 150)

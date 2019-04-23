@@ -171,9 +171,10 @@ var validator = $("#form").kendoValidator({
                 title: '产品名称',
                 width: 240,
 //                editable:true,
-                sortable: {
-                    initialDirection: "asc"
-                },
+//                sortable: {
+//                    initialDirection: "asc"
+//                },
+                sortable:false,
                 editor: function(container, options){
                     container.html(options.model.productName);
                     container.removeClass('k-edit-cell');
